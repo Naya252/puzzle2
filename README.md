@@ -13,4 +13,4 @@
 
 **Nonograms:** [main link](https://rolling-scopes-school.github.io/naya252-JSFE2023Q4/nonograms/)
 
-
+**Self-introduction:** [main link](https://rolling-scopes-school.github.io/naya252-JSFE2023Q4/self-introduction/)
