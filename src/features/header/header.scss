@@ -1,0 +1,69 @@
+@import '../../styles/vartiables.scss';
+
+.navbar-toggler {
+  padding: 4px;
+  border: 1px solid $main-color;
+  color: $main-color;
+}
+
+.bi-gear {
+  width: 24px;
+  height: 24px;
+  transition: all 0.3s linear;
+}
+
+.cog-rotate {
+  .bi-gear {
+    transform: rotate(-45deg);
+  }
+}
+
+.logo {
+  margin-right: 16px;
+  margin-bottom: 4px;
+  width: 28px;
+}
+
+.collapse.show {
+  position: absolute;
+  top: 50px;
+  left: 100%;
+  z-index: 50;
+  width: 100%;
+  height: 100dvh;
+  transition: all 0.5s ease;
+}
+
+.collapse.show.translateY {
+  transform: translateX(-100%);
+  background: #0f2633e8;
+}
+
+.navbar {
+  min-width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-wrap {
+  display: flex;
+}
+
+.links {
+  display: flex;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .navbar-expand-md .navbar-collapse {
+    justify-content: flex-end;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .logo {
+    margin-right: 8px;
+    margin-bottom: 0;
+    width: 20px;
+  }
+}

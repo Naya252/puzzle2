@@ -1,5 +1,7 @@
 import '@/styles/core.scss';
 import BaseComponent from '@/components/base-component.ts';
+import HeaderComponent from '@/features/header/header-component.ts';
+import FooterComponent from '@/features/footer/footer-component.ts';
 import type Router from '@/lib/router.ts';
 import createRouter from '@/router/router.ts';
 import { ROUTES } from '@/router/pathes.ts';
@@ -11,9 +13,14 @@ export default class App {
   constructor() {
     this.appContainer = new BaseComponent('div', ['app']);
     const content = new BaseComponent('div', ['content', 'container']);
+    const top = new HeaderComponent();
+    const { header } = top;
 
-    this.appContainer.append(...this.createLinks(), content);
+    const bottom = new FooterComponent();
+    const { footer } = bottom;
 
+    top.appendLinks(...this.createLinks());
+    this.appContainer.append(header, content, footer);
     this.router = createRouter(content);
   }
 

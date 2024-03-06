@@ -27,6 +27,10 @@ export default class BaseComponent {
     }
   }
 
+  public setHTML(string: string): void {
+    this.element.innerHTML = string;
+  }
+
   public setAttributes(attrs: Record<string, string>): void {
     Object.entries(attrs).forEach(([attrName, attrValue]) => {
       this.element.setAttribute(attrName, attrValue);

@@ -1,3 +1,5 @@
+@import './vartiables.scss';
+
 :root {
   background-color: #242424;
   color: rgb(255 255 255 / 87%);
@@ -12,13 +14,14 @@
 }
 
 a {
-  color: #646cff;
+  color: rgba($main-color, 0.7);
   font-weight: 500;
   text-decoration: inherit;
+  transition: all 0.3s ease;
 }
 
 a:hover {
-  color: #535bf2;
+  color: $main-color;
 }
 
 body {
@@ -45,61 +48,7 @@ h1 {
   min-height: 100dvh;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  transition: filter 300ms;
-  will-change: filter;
-}
-
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.vanilla:hover {
-  filter: drop-shadow(0 0 2em #3178c6aa);
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
-button {
-  padding: 0.6em 1.2em;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 1em;
-  font-weight: 500;
-  transition: border-color 0.25s;
-}
-
-button:hover {
-  border-color: #646cff;
-}
-
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    background-color: #fff;
-    color: #213547;
-  }
-
-  a:hover {
-    color: #747bff;
-  }
-
-  button {
-    background-color: #f9f9f9;
-  }
+.modal-open,
+.burger-open {
+  overflow: hidden;
 }

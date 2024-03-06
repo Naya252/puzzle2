@@ -8,14 +8,14 @@ export default function createRouter(routerOutlet: BaseComponent): Router {
       {
         name: ROUTES.Login,
         component: async () => {
-          const { default: createPage } = await import('@/features/unauthorizedLayout.ts');
+          const { default: createPage } = await import('@/features/unauthorized-layout.ts');
           return createPage();
         },
       },
       {
         name: ROUTES.Info,
         component: async () => {
-          const { default: createPage } = await import('@/features/authorizedLayout.ts');
+          const { default: createPage } = await import('@/features/authorized-layout.ts');
           return createPage();
         },
       },
