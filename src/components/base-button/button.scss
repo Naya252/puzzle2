@@ -1,0 +1,19 @@
+@import '../../styles/variables.scss';
+
+.btn-pz-primary {
+  width: 100%;
+  margin-top: 16px;
+  background-color: $accent-color;
+  filter: brightness(1);
+
+  &:hover,
+  &:focus {
+    background-color: $accent-color;
+    filter: brightness(1.2);
+  }
+
+  &:active {
+    background-color: $accent-color !important;
+    filter: brightness(1);
+  }
+}

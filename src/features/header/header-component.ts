@@ -45,7 +45,7 @@ export default class Header extends BaseComponent {
 
     if (this.collapse.getElement().classList.contains('show')) {
       this.burger.getElement().classList.remove('cog-rotate');
-      this.collapse.getElement().classList.remove('translateY');
+      this.collapse.getElement().classList.remove('translate-y');
 
       setTimeout(() => {
         parent.classList.remove('burger-open');
@@ -59,7 +59,7 @@ export default class Header extends BaseComponent {
       sibling.setAttribute('inert', 'true');
 
       setTimeout(() => {
-        this.collapse.getElement().classList.add('translateY');
+        this.collapse.getElement().classList.add('translate-y');
       }, 300);
     }
   }

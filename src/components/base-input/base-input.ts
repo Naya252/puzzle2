@@ -1,4 +1,5 @@
 import BaseComponent from '@/components/base-component.ts';
+import '@/components/base-input/input.scss';
 
 type InputType =
   | 'text'
@@ -25,6 +26,8 @@ type InputType =
   | 'week';
 
 export default class BaseInput extends BaseComponent {
+  private readonly input: BaseComponent;
+
   constructor(
     inputId: string,
     labelText: string,
@@ -36,7 +39,7 @@ export default class BaseInput extends BaseComponent {
     super('div', ['input-wrapper']);
 
     const label = new BaseComponent('label', ['form-label'], { for: inputId }, labelText);
-    const input = new BaseComponent('input', ['form-control'], {
+    this.input = new BaseComponent('input', ['form-control'], {
       ...attr,
       id: inputId,
       'aria-describedby': textId,
@@ -44,6 +47,10 @@ export default class BaseInput extends BaseComponent {
     });
     const text = new BaseComponent('div', ['form-text'], { id: textId, text: subtext });
 
-    this.append(label, input, text);
+    this.append(label, this.input, text);
+  }
+
+  public inputListener(eventName: string, listener: EventListenerOrEventListenerObject): void {
+    this.input.addListener(eventName, listener);
   }
 }

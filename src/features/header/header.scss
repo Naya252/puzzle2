@@ -1,4 +1,4 @@
-@import '../../styles/variables.scss';
+@import '../../styles/variables';
 
 .navbar-toggler {
   padding: 4px;
@@ -19,29 +19,29 @@
 }
 
 .logo {
+  width: 28px;
   margin-right: 16px;
   margin-bottom: 4px;
-  width: 28px;
 }
 
 .collapse.show {
   position: absolute;
+  z-index: 50;
   top: 50px;
   left: 100%;
-  z-index: 50;
   width: 100%;
   height: 100dvh;
   transition: all 0.5s ease;
-}
 
-.collapse.show.translateY {
-  transform: translateX(-100%);
-  background: #0f2633e8;
+  &.translate-y {
+    background: #0f2633e8;
+    transform: translateX(-100%);
+  }
 }
 
 .navbar {
-  min-width: 100%;
   display: flex;
+  min-width: 100%;
   flex-direction: column;
 }
 
@@ -54,16 +54,16 @@
   gap: 16px;
 }
 
-@media (min-width: 768px) {
+@media (width >= 768px) {
   .navbar-expand-md .navbar-collapse {
     justify-content: flex-end;
   }
 }
 
-@media only screen and (max-width: 767px) {
+@media only screen and (width <= 767px) {
   .logo {
+    width: 20px;
     margin-right: 8px;
     margin-bottom: 0;
-    width: 20px;
   }
 }

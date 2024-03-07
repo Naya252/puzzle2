@@ -37,7 +37,7 @@ export default class BaseComponent {
     });
   }
 
-  public addListener(eventName: string, listener: VoidFunction): void {
+  public addListener(eventName: string, listener: EventListenerOrEventListenerObject): void {
     this.element.addEventListener(eventName, listener);
   }
 
