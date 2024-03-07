@@ -1,0 +1,33 @@
+@import '../../styles/variables.scss';
+
+.login-card {
+  position: relative;
+  max-width: 600px;
+  width: 100%;
+  margin: auto;
+  padding: 4rem 6rem;
+  border-radius: 16px;
+  background: rgba(#2b3035, 0.9);
+}
+
+.input-wrapper {
+  margin-bottom: 32px;
+}
+
+.login-submit {
+  width: 100%;
+  margin-top: 16px;
+  background-color: $accent-color;
+  filter: brightness(1);
+
+  &:hover {
+    background-color: $accent-color;
+    filter: brightness(1.2);
+  }
+
+  &:active,
+  &:focus {
+    background-color: $accent-color;
+    filter: brightness(1.3);
+  }
+}

@@ -1,5 +1,5 @@
 export default class BaseComponent {
-  private readonly element: HTMLElement;
+  protected readonly element: HTMLElement;
 
   constructor(tag = 'div', classNames: string[] = [], attributes: Record<string, string> = {}, textContent = '') {
     this.element = document.createElement(tag);

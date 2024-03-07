@@ -1,4 +1,4 @@
-@import './vartiables.scss';
+@import './variables.scss';
 
 :root {
   background-color: #242424;
@@ -46,9 +46,17 @@ h1 {
   flex-direction: column;
   width: 100%;
   min-height: 100dvh;
+  position: relative;
 }
 
 .modal-open,
 .burger-open {
   overflow: hidden;
+}
+
+.content {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

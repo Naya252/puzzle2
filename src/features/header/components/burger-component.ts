@@ -1,11 +1,9 @@
 import BaseComponent from '@/components/base-component.ts';
 import cog from '@/assets/icons/cog.ts';
 
-export default class BurgerComponent {
-  public burger: BaseComponent;
-
+export default class BurgerComponent extends BaseComponent {
   constructor(target: string) {
-    this.burger = new BaseComponent('button', ['navbar-toggler'], {
+    super('button', ['navbar-toggler'], {
       type: 'button btn-link',
       'data-bs-toggle': 'collapse',
       'data-bs-target': `#${target}`,
@@ -14,6 +12,6 @@ export default class BurgerComponent {
       'aria-label': 'change nav',
     });
 
-    this.burger.setHTML(cog);
+    this.setHTML(cog);
   }
 }

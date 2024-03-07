@@ -1,4 +1,4 @@
-@import '../../styles/vartiables.scss';
+@import '../../styles/variables.scss';
 
 .footer {
   min-height: 100px;
@@ -14,10 +14,10 @@
   cursor: pointer;
   transition: all 0.3s ease;
   background: center / contain no-repeat url(/src/assets/img/rss.svg);
-  filter: brightness(0.5);
+  filter: drop-shadow(1px 1px 2px #2b3035);
 }
 .rs-logo:hover {
-  filter: brightness(1);
+  filter: drop-shadow(1px 1px 2px #2b3035) brightness(1.2);
 }
 
 .github {
@@ -26,8 +26,8 @@
   cursor: pointer;
   transition: all 0.3s ease;
   background: center / contain no-repeat url(/src/assets/img/github.svg);
-  filter: brightness(0.5);
+  filter: drop-shadow(1px 1px 2px #2b3035);
 }
 .github:hover {
-  filter: brightness(1);
+  filter: drop-shadow(1px 1px 2px #2b3035) brightness(1.2);
 }
