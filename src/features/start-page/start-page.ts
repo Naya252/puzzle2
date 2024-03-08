@@ -1,5 +1,5 @@
 import BaseComponent from '@/components/base-component.ts';
-// import store from '@/store/store.ts';
+import store from '@/store/store.ts';
 import '@/features/start-page/start.scss';
 import { videoLayer } from '@/features/video-layer/video-layer.ts';
 
@@ -35,12 +35,20 @@ const createAdvantages = (): BaseComponent => {
   return advantagesContainer;
 };
 
+const createGreeting = (name: string): BaseComponent => {
+  const h1 = new BaseComponent('h1', [], {});
+  const user = new BaseComponent('span', ['accent'], {}, name);
+  const span1 = new BaseComponent('span', [], {}, ', welcome to the ');
+  const span2 = new BaseComponent('span', ['accent'], {}, '"RSS Puzzle"');
+  const span3 = new BaseComponent('span', [], {}, ' game!');
+  h1.append(user, span1, span2, span3);
+  return h1;
+};
+
 class AuthPage extends BaseComponent {
   constructor(fn: (route: string, isAuth: boolean) => void) {
     super('div', ['layout-content'], {});
-    // const user = store.user.GET_USER();
-    // `${user.name}  ${user.surname}`
-    const h1 = new BaseComponent('h1', [], {}, `Welcome to the "RSS Puzzle" game!`);
+    const user = store.user.GET_USER();
 
     const finalText = new BaseComponent(
       'h3',
@@ -49,10 +57,11 @@ class AuthPage extends BaseComponent {
       'We hope you enjoy playing "RSS Puzzle" and improving your English language skills!',
     );
 
+    const greeting = createGreeting(`${user.name}  ${user.surname}`);
     const about = createAbout();
     const advantages = createAdvantages();
     const content = new BaseComponent('div', ['info-card'], {});
-    content.append(h1, about, advantages, finalText);
+    content.append(greeting, about, advantages, finalText);
     this.append(videoLayer, content);
     console.log(fn);
   }
