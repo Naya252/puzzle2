@@ -14,6 +14,10 @@ export class User {
     return this.user;
   }
 
+  public HAS_USER(): boolean {
+    return this.user.name !== '' && this.user.surname !== '';
+  }
+
   public SET_USER(userData: UserType): void {
     this.user = { ...userData };
   }

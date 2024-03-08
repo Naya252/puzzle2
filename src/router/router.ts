@@ -2,24 +2,29 @@ import Router, { type Route } from '@/lib/router.ts';
 import { ROUTES } from '@/router/pathes.ts';
 import type BaseComponent from '@/components/base-component.ts';
 
-class AppRouter extends Router {
+export default class AppRouter extends Router {
   public routerOutlet: BaseComponent;
+  public changeHeader: VoidFunction;
 
-  constructor(routerOutlet: BaseComponent) {
+  constructor(routerOutlet: BaseComponent, fn: VoidFunction) {
     super(
       [
         {
           name: ROUTES.Login,
           component: async () => {
             const { default: createPage } = await import('@/features/unauthorized-layout.ts');
-            return createPage();
+            return createPage((route: string, isAuth: boolean) => {
+              this.push(route, isAuth);
+            });
           },
         },
         {
           name: ROUTES.Info,
           component: async () => {
             const { default: createPage } = await import('@/features/authorized-layout.ts');
-            return createPage();
+            return createPage((route: string, isAuth: boolean) => {
+              this.push(route, isAuth);
+            });
           },
         },
       ],
@@ -34,9 +39,23 @@ class AppRouter extends Router {
     );
 
     this.routerOutlet = routerOutlet;
+    this.changeHeader = fn;
   }
-}
 
-export default function createRouter(routerOutlet: BaseComponent): Router {
-  return new AppRouter(routerOutlet);
+  public push(route: string, isAuth: boolean): void {
+    const isSave = false;
+
+    this.changeHeader();
+
+    if (isAuth) {
+      if (route !== 'login') {
+        super.navigateTo(route);
+      } else {
+        super.navigateTo('info', isSave);
+      }
+    }
+    if (!isAuth) {
+      super.navigateTo('login', isSave);
+    }
+  }
 }

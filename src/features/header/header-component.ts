@@ -1,5 +1,6 @@
 import BaseComponent from '@/components/base-component.ts';
 import '@/features/header/header.scss';
+import store from '@/store/store.ts';
 
 import BurgerComponent from '@/features/header/components/burger-component.ts';
 import CollapseComponent from '@/features/header/components/collapse-component.ts';
@@ -25,10 +26,28 @@ export default class Header extends BaseComponent {
     });
   }
 
-  public appendLinks(...data: HTMLAnchorElement[]): void {
+  public appendLinks(...data: HTMLElement[]): void {
     const linksWrapper = new BaseComponent('div', ['links']);
     linksWrapper.append(...data);
     this.nav.append(linksWrapper);
+
+    this.changeHeader();
+  }
+
+  public changeHeader(): void {
+    const firstChild = this.element?.childNodes[0];
+
+    if (firstChild !== undefined && firstChild instanceof HTMLElement) {
+      const { lastChild } = firstChild;
+
+      if (lastChild !== null && lastChild !== undefined && lastChild instanceof HTMLElement) {
+        if (store.user.HAS_USER()) {
+          lastChild.classList.remove('invisible');
+        } else {
+          lastChild.classList.add('invisible');
+        }
+      }
+    }
   }
 
   private toggleCollapse(): void {

@@ -23,10 +23,10 @@ export default class Router {
     window.removeEventListener('popstate', this.onHistoryChangeHandler);
   }
 
-  public navigateTo(pathName: string): void {
+  public navigateTo(pathName: string, isSave = true): void {
     const { name: routeName } = this.changePage(pathName);
 
-    if (routeName === '404') {
+    if (routeName === '404' || !isSave) {
       window.history.replaceState(routeName, '', routeName);
     } else {
       window.history.pushState(routeName, '', routeName);
@@ -47,7 +47,7 @@ export default class Router {
   }
 
   private isAppRoute(routeName: unknown): boolean {
-    const isRoute = Object.values(this.routes).some((route) => route === routeName);
+    const isRoute = Object.values(this.routes).some((route) => route.name === routeName);
     return isRoute;
   }
 

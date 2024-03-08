@@ -32,3 +32,8 @@ export const saveUser = (data: UserType): void => {
   localStorage.setItem('User', JSON.stringify(data));
   store.user.SET_USER(data);
 };
+
+export const removeUser = (): void => {
+  localStorage.removeItem('User');
+  store.user.SET_USER({ name: '', surname: '' });
+};

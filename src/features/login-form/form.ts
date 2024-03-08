@@ -4,6 +4,7 @@ import BaseButton from '@/components/base-button/base-button.ts';
 import '@/features/login-form/form.scss';
 import isValid from '@/utils/form-validator.ts';
 import { saveUser } from '@/repository/login-repository.ts';
+import store from '@/store/store.ts';
 
 type FormMethod = 'post' | 'get';
 
@@ -12,8 +13,9 @@ export default class LoginForm extends BaseComponent {
   public surnameInput: BaseInput;
   public button: BaseButton;
   public isSubmit = false;
+  public pushRouter: (route: string, isAuth: boolean) => void;
 
-  constructor(method: FormMethod = 'post') {
+  constructor(pushRouter: (route: string, isAuth: boolean) => void, method: FormMethod = 'post') {
     super('form', ['needs-validation'], { novalidate: '', action: '', method });
     this.nameInput = new BaseInput('name', 'Name', 'name-text', 'subtext', {
       required: '',
@@ -40,6 +42,7 @@ export default class LoginForm extends BaseComponent {
     });
 
     this.validateInput();
+    this.pushRouter = pushRouter;
   }
 
   private validateInput(): void {
@@ -58,6 +61,7 @@ export default class LoginForm extends BaseComponent {
 
     if (isValid(e)) {
       saveUser({ name: this.nameInput.getValue(), surname: this.surnameInput.getValue() });
+      this.pushRouter('info', store.user.HAS_USER());
     }
 
     this.element.classList.add('was-validated');

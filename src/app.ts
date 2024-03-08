@@ -3,27 +3,29 @@ import BaseComponent from '@/components/base-component.ts';
 import HeaderComponent from '@/features/header/header-component.ts';
 import FooterComponent from '@/features/footer/footer-component.ts';
 
-import type Router from '@/lib/router.ts';
-import createRouter from '@/router/router.ts';
+import AppRouter from '@/router/router.ts';
 import { ROUTES } from '@/router/pathes.ts';
 
 import store from '@/store/store.ts';
-import { getUser } from '@/repository/login-repository.ts';
+import { getUser, removeUser } from '@/repository/login-repository.ts';
 
 export default class App {
   private readonly appContainer: BaseComponent;
-  private readonly router: Router;
+  private readonly router: AppRouter;
+  private readonly header: HeaderComponent;
 
   constructor() {
     this.appContainer = new BaseComponent('div', ['app']);
 
-    const header = new HeaderComponent();
+    this.header = new HeaderComponent();
     const content = new BaseComponent('div', ['content', 'container']);
     const footer = new FooterComponent();
 
-    header.appendLinks(...this.createLinks());
-    this.appContainer.append(header, content, footer);
-    this.router = createRouter(content);
+    this.header.appendLinks(...this.createLinks());
+    this.appContainer.append(this.header, content, footer);
+    this.router = new AppRouter(content, () => {
+      this.header.changeHeader();
+    });
   }
 
   public init(): void {
@@ -33,6 +35,8 @@ export default class App {
 
     const user = getUser();
     store.user.SET_USER(user);
+
+    this.router.push('info', store.user.HAS_USER());
   }
 
   protected destroy(): void {
@@ -40,18 +44,23 @@ export default class App {
     this.router.destroy();
   }
 
-  private createLinks(): HTMLAnchorElement[] {
+  private createLinks(): HTMLElement[] {
     return Object.entries(ROUTES).map(([name, route]) => {
-      const link = document.createElement('a');
-      link.href = route;
-      link.textContent = name;
+      const link = new BaseComponent('a', ['nav-link'], { id: route, href: route }, name === 'Login' ? 'Logout' : name);
 
-      link.onclick = (event) => {
+      link.addListener('click', (event) => {
         event.preventDefault();
-        this.router.navigateTo(route);
-      };
+        this.router.push(route, store.user.HAS_USER());
 
-      return link;
+        const el = link.getElement();
+
+        if (el.id === 'login') {
+          removeUser();
+          this.router.push('login', store.user.HAS_USER());
+        }
+      });
+
+      return link.getElement();
     });
   }
 }
