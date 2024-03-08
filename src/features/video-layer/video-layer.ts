@@ -25,3 +25,5 @@ export default class VideoLayer extends BaseComponent {
     this.append(this.player);
   }
 }
+
+export const videoLayer = new VideoLayer();

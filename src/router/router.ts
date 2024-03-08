@@ -12,16 +12,16 @@ export default class AppRouter extends Router {
         {
           name: ROUTES.Login,
           component: async () => {
-            const { default: createPage } = await import('@/features/unauthorized-layout.ts');
+            const { default: createPage } = await import('@/features/login-page/login-page.ts');
             return createPage((route: string, isAuth: boolean) => {
               this.push(route, isAuth);
             });
           },
         },
         {
-          name: ROUTES.Info,
+          name: ROUTES.Start,
           component: async () => {
-            const { default: createPage } = await import('@/features/authorized-layout.ts');
+            const { default: createPage } = await import('@/features/start-page/start-page.ts');
             return createPage((route: string, isAuth: boolean) => {
               this.push(route, isAuth);
             });
@@ -51,7 +51,7 @@ export default class AppRouter extends Router {
       if (route !== 'login') {
         super.navigateTo(route);
       } else {
-        super.navigateTo('info', isSave);
+        super.navigateTo(ROUTES.Start, isSave);
       }
     }
     if (!isAuth) {

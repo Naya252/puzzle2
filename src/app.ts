@@ -36,7 +36,7 @@ export default class App {
     const user = getUser();
     store.user.SET_USER(user);
 
-    this.router.push('info', store.user.HAS_USER());
+    this.router.push(ROUTES.Start, store.user.HAS_USER());
   }
 
   protected destroy(): void {

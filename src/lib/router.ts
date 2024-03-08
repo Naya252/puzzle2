@@ -15,7 +15,7 @@ export default class Router {
 
     const path = window.location.pathname.slice(1);
 
-    const pathName = path !== '' ? path : 'info';
+    const pathName = path !== '' ? path : 'start';
     this.navigateTo(pathName);
   }
 
