@@ -6,6 +6,7 @@ export default class AppRouter extends Router {
   public routerOutlet: BaseComponent;
   public changeHeader: VoidFunction;
 
+  // eslint-disable-next-line max-lines-per-function
   constructor(routerOutlet: BaseComponent, fn: VoidFunction) {
     super(
       [
@@ -27,6 +28,24 @@ export default class AppRouter extends Router {
             });
           },
         },
+        {
+          name: ROUTES.Game,
+          component: async () => {
+            const { default: createPage } = await import('@/features/game-page/game-page.ts');
+            return createPage((route: string, isAuth: boolean) => {
+              this.push(route, isAuth);
+            });
+          },
+        },
+        // {
+        //   name: ROUTES.Statistic,
+        //   component: async () => {
+        //     const { default: createPage } = await import('@/features/game-page/game-page.ts');
+        //     return createPage((route: string, isAuth: boolean) => {
+        //       this.push(route, isAuth);
+        //     });
+        //   },
+        // },
       ],
       async (route: Route) => {
         const component = await route.component();

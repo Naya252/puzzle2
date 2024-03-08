@@ -1,5 +1,7 @@
 import BaseComponent from '@/components/base-component.ts';
+import BaseButton from '@/components/base-button/base-button.ts';
 import store from '@/store/store.ts';
+import { ROUTES } from '@/router/pathes.ts';
 import '@/features/start-page/start.scss';
 import { videoLayer } from '@/features/video-layer/video-layer.ts';
 
@@ -46,7 +48,7 @@ const createGreeting = (name: string): BaseComponent => {
 };
 
 class AuthPage extends BaseComponent {
-  constructor(fn: (route: string, isAuth: boolean) => void) {
+  constructor(pushRouter: (route: string, isAuth: boolean) => void) {
     super('div', ['layout-content'], {});
     const user = store.user.GET_USER();
 
@@ -61,9 +63,14 @@ class AuthPage extends BaseComponent {
     const about = createAbout();
     const advantages = createAdvantages();
     const content = new BaseComponent('div', ['info-card'], {});
-    content.append(greeting, about, advantages, finalText);
+
+    const startButton = new BaseButton('button', 'Start', 'start');
+    startButton.addListener('click', () => {
+      pushRouter(ROUTES.Game, store.user.HAS_USER());
+    });
+
+    content.append(greeting, about, advantages, finalText, startButton);
     this.append(videoLayer, content);
-    console.log(fn);
   }
 }
 

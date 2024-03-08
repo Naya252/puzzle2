@@ -6,7 +6,7 @@
 .info-card {
   position: relative;
   width: 100%;
-  padding: 7rem 6rem;
+  padding: 5rem 6rem 5rem;
   border-radius: 16px;
   margin: 1rem auto;
   background: rgba(#2b3035, 0.98);
@@ -20,5 +20,10 @@
     .accent {
       color: $main-color;
     }
+  }
+
+  .start {
+    max-width: 300px;
+    margin: 1rem 0 0 auto;
   }
 }
