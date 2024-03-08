@@ -7,6 +7,9 @@ import type Router from '@/lib/router.ts';
 import createRouter from '@/router/router.ts';
 import { ROUTES } from '@/router/pathes.ts';
 
+import store from '@/store/store.ts';
+import { getUser } from '@/repository/login-repository.ts';
+
 export default class App {
   private readonly appContainer: BaseComponent;
   private readonly router: Router;
@@ -15,7 +18,6 @@ export default class App {
     this.appContainer = new BaseComponent('div', ['app']);
 
     const header = new HeaderComponent();
-
     const content = new BaseComponent('div', ['content', 'container']);
     const footer = new FooterComponent();
 
@@ -28,6 +30,9 @@ export default class App {
     const { body } = document;
     body.setAttribute('data-bs-theme', 'dark');
     this.appContainer.appendToParent(body);
+
+    const user = getUser();
+    store.user.SET_USER(user);
   }
 
   protected destroy(): void {

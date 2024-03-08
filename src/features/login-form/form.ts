@@ -3,6 +3,7 @@ import BaseInput from '@/components/base-input/base-input.ts';
 import BaseButton from '@/components/base-button/base-button.ts';
 import '@/features/login-form/form.scss';
 import isValid from '@/utils/form-validator.ts';
+import { saveUser } from '@/repository/login-repository.ts';
 
 type FormMethod = 'post' | 'get';
 
@@ -56,7 +57,7 @@ export default class LoginForm extends BaseComponent {
     e.stopPropagation();
 
     if (isValid(e)) {
-      // console.log(11111111);
+      saveUser({ name: this.nameInput.getValue(), surname: this.surnameInput.getValue() });
     }
 
     this.element.classList.add('was-validated');

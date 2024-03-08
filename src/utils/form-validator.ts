@@ -56,16 +56,16 @@ const checkMaxLength = (el: HTMLInputElement, info: HTMLDivElement): boolean => 
 };
 
 const validation = (e: Event | HTMLElement): boolean => {
-  let resultult = true;
+  let isValid = true;
 
   if (e instanceof Event) {
     if (e.target === null) {
-      resultult = false;
+      isValid = false;
       throw new Error('null');
     }
 
     if (e.target instanceof HTMLFormElement) {
-      checkElements(e.target.elements);
+      isValid = checkElements(e.target.elements);
     }
   }
 
@@ -73,14 +73,17 @@ const validation = (e: Event | HTMLElement): boolean => {
     let arr = Array.from(e.childNodes);
     arr = arr.map((el) => el.childNodes[1] ?? el);
 
-    checkElements(arr);
+    isValid = checkElements(arr);
   }
 
-  return resultult;
+  return isValid;
 };
 
-const checkElements = (element: ChildNode[] | HTMLFormControlsCollection): void => {
+const checkElements = (element: ChildNode[] | HTMLFormControlsCollection): boolean => {
   const formElements = Array.from(element);
+
+  const isValid = new Set();
+  isValid.add(true);
 
   formElements.forEach((el) => {
     if (el instanceof HTMLInputElement) {
@@ -90,12 +93,14 @@ const checkElements = (element: ChildNode[] | HTMLFormControlsCollection): void 
       }
 
       info.innerHTML = '';
-      checkMaxLength(el, info);
-      checkPattern(el, info);
-      checkMinLength(el, info);
-      checkRequired(el, info);
+      isValid.add(checkMaxLength(el, info));
+      isValid.add(checkPattern(el, info));
+      isValid.add(checkMinLength(el, info));
+      isValid.add(checkRequired(el, info));
     }
   });
+
+  return !isValid.has(false);
 };
 
 export default validation;

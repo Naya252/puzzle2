@@ -53,4 +53,17 @@ export default class BaseInput extends BaseComponent {
   public inputListener(eventName: string, listener: EventListenerOrEventListenerObject): void {
     this.input.addListener(eventName, listener);
   }
+
+  public getValue(): string {
+    const el = this.input.getElement();
+
+    if (!('value' in el)) {
+      throw new Error('not value');
+    }
+    if (typeof el.value !== 'string') {
+      throw new Error('not string');
+    }
+
+    return el.value;
+  }
 }
