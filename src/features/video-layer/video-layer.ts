@@ -1,6 +1,7 @@
 import BaseComponent from '@/components/base-component.ts';
 import '@/features/video-layer/video-layer.scss';
-import videoUrl from '@/assets/video/cloud.mp4';
+import videoUrl from '@/assets/video/cloud.webm';
+import posterUrl from '@/assets/video/poster.png';
 
 export default class VideoLayer extends BaseComponent {
   private readonly player: BaseComponent;
@@ -10,11 +11,17 @@ export default class VideoLayer extends BaseComponent {
     super('div', ['video-layer']);
 
     this.source = new BaseComponent('source', [], {
-      type: 'video/mp4',
+      type: 'video/webm',
       src: videoUrl,
     });
 
-    this.player = new BaseComponent('video', [], { muted: 'true', autoplay: 'true', loop: 'true', preload: 'auto' });
+    this.player = new BaseComponent('video', [], {
+      muted: 'true',
+      autoplay: 'true',
+      loop: 'true',
+      preload: 'auto',
+      poster: posterUrl,
+    });
     this.player.append(this.source);
 
     const video = this.player.getElement();

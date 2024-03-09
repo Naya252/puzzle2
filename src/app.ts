@@ -1,5 +1,6 @@
 import '@/styles/core.scss';
 import BaseComponent from '@/components/base-component.ts';
+import { videoLayer } from '@/features/video-layer/video-layer.ts';
 import HeaderComponent from '@/features/header/header-component.ts';
 import FooterComponent from '@/features/footer/footer-component.ts';
 
@@ -22,7 +23,7 @@ export default class App {
     const footer = new FooterComponent();
 
     this.header.appendLinks(...this.createLinks());
-    this.appContainer.append(this.header, content, footer);
+    this.appContainer.append(videoLayer, this.header, content, footer);
     this.router = new AppRouter(content, () => {
       this.header.changeHeader();
     });

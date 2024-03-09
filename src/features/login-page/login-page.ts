@@ -1,16 +1,11 @@
 import BaseComponent from '@/components/base-component.ts';
-import { videoLayer } from '@/features/video-layer/video-layer.ts';
 import LoginForm from '@/features/login-page/login-form/form.ts';
 
 class LoginPage extends BaseComponent {
   constructor(fn: (route: string, isAuth: boolean) => void) {
-    super('div', [], {});
-
+    super('div', ['login-card'], {});
     const loginForm = new LoginForm(fn);
-
-    const content = new BaseComponent('div', ['login-card'], {});
-    content.append(loginForm);
-    this.append(videoLayer, content);
+    this.append(loginForm);
   }
 }
 

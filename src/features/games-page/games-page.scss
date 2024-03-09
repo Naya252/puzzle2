@@ -1,0 +1,88 @@
+@import '../../styles/variables';
+
+.game {
+  align-self: flex-start;
+  margin: 2rem 0;
+}
+.levels {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  .level {
+    max-width: 120px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 16px;
+    background-color: rgba($dark-color, 0.85);
+    border-color: rgba($dark-color, 0.85);
+    filter: brightness(1);
+
+    &:hover,
+    &:focus {
+      background-color: rgba($dark-color, 0.95);
+      border-color: rgba($dark-color, 0.95);
+      filter: brightness(1.2);
+    }
+
+    &:active,
+    &.active {
+      background-color: $dark-color !important;
+      border-color: $dark-color;
+      filter: brightness(1);
+    }
+  }
+}
+
+.cards {
+  padding-top: 1.5rem;
+
+  .game-card {
+    min-height: 120px;
+    background-color: rgba($dark-color, 0.9);
+    border: 2px solid #464849;
+    overflow: hidden;
+    position: relative;
+    padding: 12px 20px;
+    transition: all 0.3s ease;
+
+    &:hover,
+    &:focus {
+      filter: brightness(1);
+      .dark-layer {
+        background-color: rgba($light-color, 0.45);
+      }
+
+      .name-img {
+        color: #000;
+        filter: brightness(0.2);
+        font-weight: 600;
+      }
+    }
+
+    &:active,
+    &.active {
+      filter: brightness(1);
+    }
+
+    .dark-layer {
+      transition: all 0.3s ease;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      z-index: 0;
+      background-color: rgba($dark-color, 0.75);
+    }
+
+    .name-img {
+      transition: all 0.3s ease;
+      position: relative;
+      color: $light-color;
+      font-weight: 600;
+      margin-bottom: 0;
+    }
+  }
+}

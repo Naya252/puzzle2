@@ -3,7 +3,6 @@ import BaseButton from '@/components/base-button/base-button.ts';
 import store from '@/store/store.ts';
 import { ROUTES } from '@/router/pathes.ts';
 import '@/features/start-page/start.scss';
-import { videoLayer } from '@/features/video-layer/video-layer.ts';
 
 const advantagesPoints = [
   'Improve your English language skills.',
@@ -64,13 +63,13 @@ class AuthPage extends BaseComponent {
     const advantages = createAdvantages();
     const content = new BaseComponent('div', ['info-card'], {});
 
-    const startButton = new BaseButton('button', 'Start', 'start');
+    const startButton = new BaseButton('button', 'Start', ['start']);
     startButton.addListener('click', () => {
-      pushRouter(ROUTES.Game, store.user.HAS_USER());
+      pushRouter(ROUTES.Games, store.user.HAS_USER());
     });
 
     content.append(greeting, about, advantages, finalText, startButton);
-    this.append(videoLayer, content);
+    this.append(content);
   }
 }
 

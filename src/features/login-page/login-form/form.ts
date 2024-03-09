@@ -34,7 +34,7 @@ export default class LoginForm extends BaseComponent {
       minlength: '4',
       pattern: '^[A-Z]{1}[a-z]*-?[A-Za-z]*$',
     });
-    this.button = new BaseButton('submit', 'Login', 'login-submit');
+    this.button = new BaseButton('submit', 'Login', ['login-submit']);
 
     this.append(this.nameInput, this.surnameInput, this.button);
 

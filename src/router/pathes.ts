@@ -1,6 +1,7 @@
 export const ROUTES = {
   Login: 'login',
   Start: 'start',
+  Games: 'games',
   Game: 'game',
   // Statistic: 'statistic',
 } as const;
