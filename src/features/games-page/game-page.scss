@@ -62,7 +62,7 @@
   aspect-ratio: 16 / 0.9;
 }
 
-.col.col-img {
+.col-img {
   display: flex;
   height: 100%;
   box-sizing: border-box;
@@ -73,9 +73,26 @@
   background-color: rgba($dark-color, 0.7);
   cursor: grab;
   font-weight: 600;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: rgba($dark-color, 0.8);
+  }
 }
 
 .col.col-target {
   width: auto;
   padding: 0;
+  transition: all 0.3s ease;
+}
+
+.col.col-container {
+  box-sizing: border-box;
+  border: 1px solid rgba($dark-color, 0.4);
+  background-color: rgba($dark-color, 0.2);
+  transition: all 0.3s ease;
+}
+
+.puzzle-scale {
+  transform: scale(0.9);
 }
