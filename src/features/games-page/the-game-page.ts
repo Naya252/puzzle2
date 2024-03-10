@@ -77,6 +77,23 @@ const drop = (event: Event, puzzle: HTMLElement): void => {
   }
 };
 
+const changeWidth = (el1: HTMLElement, el2: HTMLElement): void => {
+  const computedStyles = window.getComputedStyle(el1);
+  const width = computedStyles.getPropertyValue('max-width');
+
+  const element1 = el1;
+  const element2 = el2;
+  element2.style.width = width;
+  element2.style.maxWidth = width;
+  element2.style.minWidth = width;
+
+  if (element1.classList.contains('col-img')) {
+    element1.style.width = `100%`;
+    element1.style.maxWidth = `100%`;
+    element1.style.minWidth = `100%`;
+  }
+};
+
 class GamePage extends BaseComponent {
   private readonly text: BaseComponent;
   private readonly hints: BaseComponent;
@@ -94,7 +111,7 @@ class GamePage extends BaseComponent {
     this.words = [];
     this.puzzle = null;
     this.data = store.game.getActiveGame();
-    console.log(this.data);
+
     const gameInfo = createGameInfo(this.data);
 
     this.hints = createHints();
@@ -120,7 +137,6 @@ class GamePage extends BaseComponent {
     if (sentense === undefined) {
       throw new Error('is undefined');
     }
-    console.log(sentense);
 
     this.changeText(sentense?.textExampleTranslate);
     this.changeWords(sentense?.textExample);
@@ -148,9 +164,10 @@ class GamePage extends BaseComponent {
       colParent.appendChild(col.getElement());
       word.addListener('click', (event: Event): void => {
         const array = Array.from(colParent.childNodes);
-        const test = array.find((element) => element.childNodes.length === 0);
-        if (!isNull(event.target) && isHTMLElement(event.target)) {
-          test?.appendChild(event.target);
+        const target = array.find((element) => element.childNodes.length === 0);
+        if (!isNull(event.target) && isHTMLElement(event.target) && isHTMLElement(target)) {
+          changeWidth(event.target, target);
+          target?.appendChild(event.target);
         }
       });
       word.addListener('dragstart', (event: Event): void => {
@@ -164,15 +181,18 @@ class GamePage extends BaseComponent {
       });
       col.addListener('drop', (event) => {
         if (!isNull(this.puzzle) && isHTMLElement(event.target)) {
+          changeWidth(this.puzzle, event.target);
           drop(event, this.puzzle);
         }
       });
+
+      this.calculateWidthWord(word, el);
       arrWords.append(word);
     });
-    this.changeToRandome(arrWords);
+    this.changeToRandom(arrWords);
   }
 
-  private changeToRandome(arrWords: BaseComponent): void {
+  private changeToRandom(arrWords: BaseComponent): void {
     const parent = arrWords.getElement();
     const children = parent.childNodes;
     let { length } = children;
@@ -186,6 +206,12 @@ class GamePage extends BaseComponent {
         this.wordsContainer.append(el);
       }
     }
+  }
+
+  private calculateWidthWord(word: BaseComponent, text: string): void {
+    const full = this.words.join('').length;
+    const el = word.getElement();
+    el.style.maxWidth = `${(text.length / full) * 100}%`;
   }
 }
 
