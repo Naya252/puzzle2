@@ -1,5 +1,5 @@
-import { type UserType } from '@/store/user-store/user-data-store.ts';
-import store from '@/store/store.ts';
+import { type UserType } from '@/types/types';
+import store from '@/store/store';
 
 const User: UserType = { name: '', surname: '' };
 
@@ -30,10 +30,10 @@ export const getUser = (): UserType => {
 
 export const saveUser = (data: UserType): void => {
   localStorage.setItem('User', JSON.stringify(data));
-  store.user.SET_USER(data);
+  store.user.setUser(data);
 };
 
 export const removeUser = (): void => {
   localStorage.removeItem('User');
-  store.user.SET_USER({ name: '', surname: '' });
+  store.user.setUser({ name: '', surname: '' });
 };

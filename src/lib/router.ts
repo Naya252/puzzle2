@@ -1,4 +1,4 @@
-import type BaseComponent from '@/components/base-component.ts';
+import type BaseComponent from '@/components/base-component';
 
 export type Route = {
   name: string;

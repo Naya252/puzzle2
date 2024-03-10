@@ -1,33 +1,12 @@
-export type RoundsData = {
-  rounds: { levelData: LevelData; words: Word[] };
-  roundsCount: number;
-};
+import { type RoundsData, type Round, type NumLevel } from '@/types/types';
 
-export type LevelData = {
-  author: string;
-  cutSrc: string;
-  id: string;
-  imageSrc: string;
-  name: string;
-  year: string;
-};
-
-export type Word = {
-  audioExample: string;
-  id: number;
-  textExample: string;
-  textExampleTranslate: string;
-  word: string;
-  wordTranslate: string;
-};
-
-export class Game {
-  private activeLevel: number;
+export default class Game {
+  private activeLevel: NumLevel;
   private levels: NodeListOf<ChildNode> | null;
-  private levelsData: Record<number, object | null>;
-  private activeGame: { levelData: LevelData; words: Word[] } | null;
+  private levelsData: Record<PropertyKey, RoundsData | null>;
+  private activeGame: Round | null;
 
-  constructor(activeLevel = 1) {
+  constructor(activeLevel: NumLevel = 1) {
     this.activeLevel = activeLevel;
     this.levels = null;
     this.levelsData = { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null };
@@ -35,52 +14,49 @@ export class Game {
     this.activeGame = null;
   }
 
-  public GET_ACTIVE_LEVEL(): number {
+  public getActiveLevel(): NumLevel {
     return this.activeLevel;
   }
 
-  public SET_ACTIVE_LEVEL(num: number): void {
+  public setActiveLevel(num: NumLevel): void {
     this.activeLevel = num;
-    this.CHANGE_ACTIVE_CLASS(num);
+    this.changeActiveClass(num);
   }
 
-  public SET_LEVELS(levels: NodeListOf<ChildNode>): void {
+  public setLevels(levels: NodeListOf<ChildNode>): void {
     this.levels = levels;
   }
 
-  public SET_LEVEL_DATA(data: unknown, id: number): void {
-    if (typeof data !== 'object' || data === null) {
-      throw new Error('Data is not an object');
-    }
-
+  public setLevelData(data: RoundsData, id: number): void {
     this.levelsData[id] = data;
   }
 
-  public GET_LEVEL_DATA(id: number): object | null {
+  public getLevelData(id: number): RoundsData | null {
     const data = this.levelsData[id];
-    if (data === null || data === undefined) {
+
+    if (typeof data === 'undefined') {
       return null;
     }
 
     return data;
   }
 
-  public HAS_LEVEL_DATA(id: number): boolean {
+  public hasLevelData(id: number): boolean {
     return this.levelsData[id] !== null;
   }
 
-  public GET_ACTIVE_GAME(): { levelData: LevelData; words: Word[] } {
+  public getActiveGame(): Round {
     if (this.activeGame === null) {
       throw new Error('Game is null');
     }
     return this.activeGame;
   }
 
-  public SET_ACTIVE_GAME(game: { levelData: LevelData; words: Word[] }): void {
+  public setActiveGame(game: Round): void {
     this.activeGame = game;
   }
 
-  public CHANGE_ACTIVE_CLASS(num: number): void {
+  public changeActiveClass(num: NumLevel): void {
     this.levels?.forEach((el) => {
       if (el instanceof HTMLElement) {
         el.classList.remove('active');

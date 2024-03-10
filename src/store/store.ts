@@ -1,5 +1,5 @@
-import { User } from '@/store/user-store/user-data-store.ts';
-import { Game } from '@/store/game-store/game-store.ts';
+import User from '@/store/user-store/user-data-store';
+import Game from '@/store/game-store/game-store';
 
 class Store {
   public user: User;

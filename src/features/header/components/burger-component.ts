@@ -1,5 +1,5 @@
-import BaseComponent from '@/components/base-component.ts';
-import cog from '@/assets/icons/cog.ts';
+import BaseComponent from '@/components/base-component';
+import cog from '@/assets/icons/cog';
 
 export default class BurgerComponent extends BaseComponent {
   constructor(target: string) {

@@ -1,11 +1,11 @@
-import BaseComponent from '@/components/base-component.ts';
-import BaseInput from '@/components/base-input/base-input.ts';
-import BaseButton from '@/components/base-button/base-button.ts';
+import BaseComponent from '@/components/base-component';
+import BaseInput from '@/components/base-input/base-input';
+import BaseButton from '@/components/base-button/base-button';
 import '@/features/login-page/login-form/form.scss';
-import isValid from '@/utils/form-validator.ts';
-import { saveUser } from '@/repository/login-repository.ts';
-import store from '@/store/store.ts';
-import { ROUTES } from '@/router/pathes.ts';
+import isValid from '@/utils/form-validator';
+import { saveUser } from '@/repository/login-repository';
+import store from '@/store/store';
+import { ROUTES } from '@/router/pathes';
 
 type FormMethod = 'post' | 'get';
 
@@ -67,7 +67,7 @@ export default class LoginForm extends BaseComponent {
 
     if (isValid(e)) {
       saveUser({ name: this.nameInput.getValue(), surname: this.surnameInput.getValue() });
-      this.pushRouter(ROUTES.Start, store.user.HAS_USER());
+      this.pushRouter(ROUTES.Start, store.user.hasUser());
     }
 
     this.element.classList.add('was-validated');

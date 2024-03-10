@@ -1,6 +1,6 @@
-import Router, { type Route } from '@/lib/router.ts';
-import { ROUTES } from '@/router/pathes.ts';
-import type BaseComponent from '@/components/base-component.ts';
+import Router, { type Route } from '@/lib/router';
+import { ROUTES } from '@/router/pathes';
+import type BaseComponent from '@/components/base-component';
 
 export default class AppRouter extends Router {
   public routerOutlet: BaseComponent;
@@ -13,7 +13,7 @@ export default class AppRouter extends Router {
         {
           name: ROUTES.Login,
           component: async () => {
-            const { default: createPage } = await import('@/features/login-page/login-page.ts');
+            const { default: createPage } = await import('@/features/login-page/login-page');
             return createPage((route: string, isAuth: boolean) => {
               this.push(route, isAuth);
             });
@@ -22,7 +22,7 @@ export default class AppRouter extends Router {
         {
           name: ROUTES.Start,
           component: async () => {
-            const { default: createPage } = await import('@/features/start-page/start-page.ts');
+            const { default: createPage } = await import('@/features/start-page/start-page');
             return createPage((route: string, isAuth: boolean) => {
               this.push(route, isAuth);
             });
@@ -31,7 +31,7 @@ export default class AppRouter extends Router {
         {
           name: ROUTES.Games,
           component: async () => {
-            const { default: createPage } = await import('@/features/games-page/games-page.ts');
+            const { default: createPage } = await import('@/features/games-page/games-page');
             return createPage((route: string, isAuth: boolean) => {
               this.push(route, isAuth);
             });
@@ -40,7 +40,7 @@ export default class AppRouter extends Router {
         {
           name: ROUTES.Game,
           component: async () => {
-            const { default: createPage } = await import('@/features/games-page/the-game-page.ts');
+            const { default: createPage } = await import('@/features/games-page/the-game-page');
             return createPage((route: string, isAuth: boolean) => {
               this.push(route, isAuth);
             });
@@ -52,7 +52,7 @@ export default class AppRouter extends Router {
         routerOutlet.replaceChildren(component);
       },
       async () => {
-        const { default: createPage } = await import('@/features/404-page.ts');
+        const { default: createPage } = await import('@/features/404-page');
         return createPage();
       },
     );

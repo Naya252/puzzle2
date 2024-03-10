@@ -1,43 +1,43 @@
-import BaseComponent from '@/components/base-component.ts';
-import BaseButton from '@/components/base-button/base-button.ts';
-import { fetchLevelData } from '@/repository/game-repository.ts';
-import store from '@/store/store.ts';
+import BaseComponent from '@/components/base-component';
+import BaseButton from '@/components/base-button/base-button';
+import { type NumLevel } from '@/types/types';
+import store from '@/store/store';
+import { getLevel } from './services/game-service';
 
 export default class Levels extends BaseComponent {
-  private activeLevel: number;
+  private activeLevel: NumLevel;
 
-  constructor(collback: (lvl: number) => void) {
+  constructor(callback: (lvl: NumLevel) => void) {
     super('div', ['levels']);
 
-    this.activeLevel = 1;
+    this.activeLevel = store.game.getActiveLevel();
 
-    for (let i = 1; i < 7; i += 1) {
+    for (let i: NumLevel = 1; i < 7; i += 1) {
       const levelButton = new BaseButton('button', `Level ${i}`, ['level']);
       levelButton.addListener('click', () => {
         this.activeLevel = i;
-        store.game.SET_ACTIVE_LEVEL(i);
-        if (!store.game.HAS_LEVEL_DATA(i)) {
-          this.fetchLevel(collback);
+        store.game.setActiveLevel(i);
+        if (!store.game.hasLevelData(i)) {
+          this.fetchLevel(callback);
         } else {
-          collback(this.activeLevel);
+          callback(this.activeLevel);
         }
       });
       this.append(levelButton);
     }
 
     const el = this.getElement();
-    store.game.SET_LEVELS(el.childNodes);
-    store.game.SET_ACTIVE_LEVEL(this.activeLevel);
-    this.fetchLevel(collback);
+    store.game.setLevels(el.childNodes);
+    store.game.changeActiveClass(this.activeLevel);
   }
 
-  public fetchLevel(collback: (lvl: number) => void): void {
-    fetchLevelData(this.activeLevel)
+  public fetchLevel(callback: (lvl: NumLevel) => void): void {
+    getLevel(this.activeLevel)
       .then(() => {
-        collback(this.activeLevel);
+        callback(this.activeLevel);
       })
-      .catch((error) => {
-        throw new Error(`Error fetching level data: ${error}`);
+      .catch(() => {
+        throw new Error(`error of fetch`);
       });
   }
 }

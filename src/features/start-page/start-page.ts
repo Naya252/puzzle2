@@ -1,7 +1,7 @@
-import BaseComponent from '@/components/base-component.ts';
-import BaseButton from '@/components/base-button/base-button.ts';
-import store from '@/store/store.ts';
-import { ROUTES } from '@/router/pathes.ts';
+import BaseComponent from '@/components/base-component';
+import BaseButton from '@/components/base-button/base-button';
+import store from '@/store/store';
+import { ROUTES } from '@/router/pathes';
 import '@/features/start-page/start.scss';
 
 const advantagesPoints = [
@@ -49,7 +49,7 @@ const createGreeting = (name: string): BaseComponent => {
 class AuthPage extends BaseComponent {
   constructor(pushRouter: (route: string, isAuth: boolean) => void) {
     super('div', ['layout-content'], {});
-    const user = store.user.GET_USER();
+    const user = store.user.getUser();
 
     const finalText = new BaseComponent(
       'h3',
@@ -65,7 +65,7 @@ class AuthPage extends BaseComponent {
 
     const startButton = new BaseButton('button', 'Start', ['start']);
     startButton.addListener('click', () => {
-      pushRouter(ROUTES.Games, store.user.HAS_USER());
+      pushRouter(ROUTES.Games, store.user.hasUser());
     });
 
     content.append(greeting, about, advantages, finalText, startButton);

@@ -1,4 +1,4 @@
-import BaseComponent from '@/components/base-component.ts';
+import BaseComponent from '@/components/base-component';
 
 export default class CollapseComponent extends BaseComponent {
   constructor(id: string) {

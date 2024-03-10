@@ -1,14 +1,15 @@
 import '@/styles/core.scss';
-import BaseComponent from '@/components/base-component.ts';
-import { videoLayer } from '@/features/video-layer/video-layer.ts';
-import HeaderComponent from '@/features/header/header-component.ts';
-import FooterComponent from '@/features/footer/footer-component.ts';
+import BaseComponent from '@/components/base-component';
+import { videoLayer } from '@/features/video-layer/video-layer';
+import HeaderComponent from '@/features/header/header-component';
+import FooterComponent from '@/features/footer/footer-component';
 
-import AppRouter from '@/router/router.ts';
-import { ROUTES } from '@/router/pathes.ts';
+import AppRouter from '@/router/router';
+import { ROUTES } from '@/router/pathes';
 
-import store from '@/store/store.ts';
-import { getUser, removeUser } from '@/repository/login-repository.ts';
+import store from '@/store/store';
+import { getUser, removeUser } from '@/repository/login-repository';
+import { getLevel, initDefaultGame } from './features/games-page/services/game-service';
 
 export default class App {
   private readonly appContainer: BaseComponent;
@@ -35,9 +36,18 @@ export default class App {
     this.appContainer.appendToParent(body);
 
     const user = getUser();
-    store.user.SET_USER(user);
+    store.user.setUser(user);
 
-    this.router.push(ROUTES.Start, store.user.HAS_USER());
+    const lvl = store.game.getActiveLevel();
+    getLevel(lvl)
+      .then(() => {
+        initDefaultGame(lvl);
+      })
+      .catch(() => {
+        throw new Error('error of fetch data');
+      });
+
+    this.router.push(ROUTES.Start, store.user.hasUser());
   }
 
   protected destroy(): void {
@@ -51,13 +61,13 @@ export default class App {
 
       link.addListener('click', (event) => {
         event.preventDefault();
-        this.router.push(route, store.user.HAS_USER());
+        this.router.push(route, store.user.hasUser());
 
         const el = link.getElement();
 
         if (el.id === 'login') {
           removeUser();
-          this.router.push('login', store.user.HAS_USER());
+          this.router.push('login', store.user.hasUser());
         }
       });
 

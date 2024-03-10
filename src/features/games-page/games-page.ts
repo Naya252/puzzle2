@@ -1,27 +1,30 @@
-import BaseComponent from '@/components/base-component.ts';
-import Levels from '@/features/games-page/levels.ts';
-import Cards from '@/features/games-page/cards.ts';
+import BaseComponent from '@/components/base-component';
+import Levels from '@/features/games-page/levels';
+import Cards from '@/features/games-page/cards';
 import '@/features/games-page/games-page.scss';
 
-import { ROUTES } from '@/router/pathes.ts';
-import store from '@/store/store.ts';
+import { ROUTES } from '@/router/pathes';
+import store from '@/store/store';
+
+import { type NumLevel } from '@/types/types';
 
 class GamesPage extends BaseComponent {
   private readonly levels: Levels;
   private readonly cards: Cards;
 
   constructor(pushRouter: (route: string, isAuth: boolean) => void) {
-    super('div', ['game'], {});
+    super('div', ['games'], {});
 
     this.cards = new Cards(() => {
-      console.log(store.game.GET_ACTIVE_GAME());
-      pushRouter(ROUTES.Game, store.user.HAS_USER());
+      pushRouter(ROUTES.Game, store.user.hasUser());
     });
-    this.levels = new Levels((lvl: number) => {
+    this.levels = new Levels((lvl: NumLevel) => {
       this.cards.drawCards(lvl);
     });
 
     this.append(this.levels, this.cards);
+    const activeLevel = store.game.getActiveLevel();
+    this.cards.drawCards(activeLevel);
   }
 }
 

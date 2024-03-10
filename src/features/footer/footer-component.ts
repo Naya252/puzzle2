@@ -1,4 +1,4 @@
-import BaseComponent from '@/components/base-component.ts';
+import BaseComponent from '@/components/base-component';
 import '@/features/footer/footer.scss';
 
 export default class Footer extends BaseComponent {

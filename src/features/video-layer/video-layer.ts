@@ -1,4 +1,4 @@
-import BaseComponent from '@/components/base-component.ts';
+import BaseComponent from '@/components/base-component';
 import '@/features/video-layer/video-layer.scss';
 import videoUrl from '@/assets/video/cloud.webm';
 import posterUrl from '@/assets/video/poster.png';

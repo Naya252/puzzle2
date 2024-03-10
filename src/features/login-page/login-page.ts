@@ -1,5 +1,5 @@
-import BaseComponent from '@/components/base-component.ts';
-import LoginForm from '@/features/login-page/login-form/form.ts';
+import BaseComponent from '@/components/base-component';
+import LoginForm from '@/features/login-page/login-form/form';
 
 class LoginPage extends BaseComponent {
   constructor(fn: (route: string, isAuth: boolean) => void) {

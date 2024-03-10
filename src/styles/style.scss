@@ -55,11 +55,11 @@ h1 {
 }
 
 .content {
+  position: relative;
   display: flex;
   flex-grow: 1;
   align-items: center;
   justify-content: center;
-  position: relative;
 
   .game {
     width: 100%;

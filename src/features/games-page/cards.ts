@@ -1,8 +1,8 @@
-import BaseComponent from '@/components/base-component.ts';
-import BaseButton from '@/components/base-button/base-button.ts';
-import store from '@/store/store.ts';
-import { type LevelData, type Word } from '@/store/game-store/game-store.ts';
-import { IMG_URL } from '@/repository/game-repository.ts';
+import BaseComponent from '@/components/base-component';
+import BaseButton from '@/components/base-button/base-button';
+import store from '@/store/store';
+import { type Round } from '@/types/types';
+import { IMG_URL } from '@/repository/game-repository';
 
 export default class Cards extends BaseComponent {
   private readonly cb: VoidFunction;
@@ -14,7 +14,7 @@ export default class Cards extends BaseComponent {
 
   public drawCards(activeLevel = 1): void {
     const children: BaseComponent[] = [];
-    const data = store.game.GET_LEVEL_DATA(activeLevel);
+    const data = store.game.getLevelData(activeLevel);
     if (data === null) {
       throw new Error('null');
     }
@@ -22,7 +22,7 @@ export default class Cards extends BaseComponent {
     if ('rounds' in data) {
       const { rounds } = data;
       if (rounds instanceof Array) {
-        rounds.forEach((el: { levelData: LevelData; words: Word[] }) => {
+        rounds.forEach((el: Round) => {
           const col = new BaseComponent('div', ['col', 'col-6', 'col-lg-4', 'col-xl-3']);
 
           const card = new BaseButton('button', ``, ['game-card']);
@@ -34,7 +34,7 @@ export default class Cards extends BaseComponent {
           const back = new BaseComponent('div', ['dark-layer']);
 
           card.addListener('click', () => {
-            store.game.SET_ACTIVE_GAME(el);
+            store.game.setActiveGame(el);
             this.cb();
           });
 

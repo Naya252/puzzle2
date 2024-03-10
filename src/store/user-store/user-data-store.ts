@@ -1,24 +1,21 @@
-export type UserType = {
-  name: string;
-  surname: string;
-};
+import { type UserType } from '@/types/types';
 
-export class User {
+export default class User {
   private user: UserType;
 
   constructor(userData: UserType = { name: '', surname: '' }) {
     this.user = userData;
   }
 
-  public GET_USER(): UserType {
+  public getUser(): UserType {
     return this.user;
   }
 
-  public HAS_USER(): boolean {
+  public hasUser(): boolean {
     return this.user.name !== '' && this.user.surname !== '';
   }
 
-  public SET_USER(userData: UserType): void {
+  public setUser(userData: UserType): void {
     this.user = { ...userData };
   }
 }

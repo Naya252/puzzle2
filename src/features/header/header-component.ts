@@ -1,10 +1,10 @@
-import BaseComponent from '@/components/base-component.ts';
+import BaseComponent from '@/components/base-component';
 import '@/features/header/header.scss';
-import store from '@/store/store.ts';
+import store from '@/store/store';
 
-import BurgerComponent from '@/features/header/components/burger-component.ts';
-import CollapseComponent from '@/features/header/components/collapse-component.ts';
-import NavComponent from '@/features/header/components/nav-component.ts';
+import BurgerComponent from '@/features/header/components/burger-component';
+import CollapseComponent from '@/features/header/components/collapse-component';
+import NavComponent from '@/features/header/components/nav-component';
 
 export default class Header extends BaseComponent {
   private readonly collapse: CollapseComponent;
@@ -41,7 +41,7 @@ export default class Header extends BaseComponent {
       const { lastChild } = firstChild;
 
       if (lastChild !== null && lastChild !== undefined && lastChild instanceof HTMLElement) {
-        if (store.user.HAS_USER()) {
+        if (store.user.hasUser()) {
           lastChild.classList.remove('invisible');
         } else {
           lastChild.classList.add('invisible');

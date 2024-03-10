@@ -1,4 +1,4 @@
-import BaseComponent from '@/components/base-component.ts';
+import BaseComponent from '@/components/base-component';
 import '@/components/base-input/input.scss';
 
 type InputType =

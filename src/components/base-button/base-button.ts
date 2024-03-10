@@ -1,4 +1,4 @@
-import BaseComponent from '@/components/base-component.ts';
+import BaseComponent from '@/components/base-component';
 import '@/components/base-button/button.scss';
 
 type ButtonType = 'submit' | 'reset' | 'button' | 'menu';

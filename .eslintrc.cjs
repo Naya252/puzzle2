@@ -40,6 +40,7 @@ module.exports = {
     '@typescript-eslint/consistent-type-imports': 'error',
     'import/no-unresolved': 'error',
     '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
+    'import/extensions': ['error', 'ignorePackages', { js: 'never', ts: 'never' }],
   },
   overrides: [
     {
