@@ -4,111 +4,35 @@ import store from '@/store/store';
 import { type Round } from '@/types/types';
 import { IMG_URL } from '@/repository/game-repository';
 import { isNull, isUndefined, isHTMLElement } from '@/utils/common-validator';
-
-const createGameInfo = (data: Round): BaseComponent => {
-  const gameInfo = new BaseComponent('div', ['info'], {});
-  const lvl = new BaseComponent('h1', ['lvl'], {}, `Level ${store.game.getActiveLevel()}:`);
-  const name = new BaseComponent('h2', ['name'], {}, `${data.levelData.name}`);
-  gameInfo.append(lvl);
-  gameInfo.append(name);
-  return gameInfo;
-};
-
-const createHints = (): BaseComponent => {
-  const hints = new BaseComponent('div', ['hints'], {}, 'hints');
-  return hints;
-};
-
-const creatText = (): BaseComponent => {
-  const text = new BaseComponent('p', ['text'], {}, 'text');
-  return text;
-};
-
-const creatGameField = (url: string): BaseComponent => {
-  const gameField = new BaseComponent('div', ['game-field']);
-  const game = gameField.getElement();
-  game.style.background = `#464849 center / contain no-repeat url(${url})`;
-
-  let i = 0;
-  while (i < 10) {
-    i += 1;
-    const row = new BaseComponent('div', ['row', 'row-img'], { id: `row-${i}` });
-    gameField.append(row);
-  }
-
-  return gameField;
-};
+import {
+  createGameInfo,
+  createHints,
+  creatText,
+  creatGameField,
+  createGameWrapper,
+} from '@/features/games-page/services/create-html-service';
+import {
+  dragStart,
+  dragEnter,
+  dragLeave,
+  dragOver,
+  drop,
+  touchDrag,
+  addAbsolute,
+  removeAbsolute,
+  changeWidth,
+  changeColParent,
+} from '@/features/games-page/services/drag-and-drop-service';
 
 const splitText = (text: string, operator: string): string[] => {
   const data = text.split(operator);
   return data;
 };
 
-const dragStart = (event: Event): void => {
-  if (
-    event instanceof DragEvent &&
-    !isNull(event.dataTransfer) &&
-    !isNull(event.target) &&
-    isHTMLElement(event.target)
-  ) {
-    event.dataTransfer.setData('text', event.target.id);
-  }
-};
-
-const dragOver = (event: Event): void => {
-  if (!isNull(event.target) && isHTMLElement(event.target)) {
-    if (event.target.classList.contains('col-img')) {
-      return;
-    }
-    event.preventDefault();
-  }
-};
-
-const drop = (event: Event, puzzle: HTMLElement): void => {
-  event.preventDefault();
-
-  if (
-    event instanceof DragEvent &&
-    !isNull(event.dataTransfer) &&
-    !isNull(event.target) &&
-    isHTMLElement(event.target)
-  ) {
-    event.target.appendChild(puzzle);
-  }
-};
-
-const changeWidth = (col: HTMLElement, puzzle: HTMLElement, lastParent: HTMLElement | null = null): void => {
-  const colCopy = col;
-  const copyLastParent = lastParent;
-  const width = puzzle.getAttribute('data-width');
-  if (typeof width === 'string') {
-    colCopy.style.maxWidth = width;
-    colCopy.style.minWidth = width;
-
-    if (!isNull(copyLastParent)) {
-      copyLastParent.style.maxWidth = 'none';
-      copyLastParent.style.minWidth = 'initial';
-    }
-
-    puzzle.classList.add('puzzle-scale');
-    setTimeout(() => {
-      puzzle.classList.remove('puzzle-scale');
-    });
-  }
-};
-
-const changeColParent = (childNodes: NodeList, evtTarget: HTMLElement, lastParent: HTMLElement): void => {
-  const array = Array.from(childNodes);
-  const target = array.find((element) => element.childNodes.length === 0);
-  if (isHTMLElement(target)) {
-    changeWidth(target, evtTarget, lastParent);
-    target?.appendChild(evtTarget);
-  }
-};
-
 class GamePage extends BaseComponent {
   private readonly text: BaseComponent;
   private readonly hints: BaseComponent;
+  private readonly gameWrapper: BaseComponent;
   private readonly gameField: BaseComponent;
   private readonly curRow: ChildNode;
   private readonly wordsContainer: BaseComponent;
@@ -117,6 +41,7 @@ class GamePage extends BaseComponent {
   private readonly data: Round;
   private words: string[];
   private puzzle: HTMLElement | null;
+  private puzzleParent: ParentNode | null;
 
   constructor(pushRouter: (route: string, isAuth: boolean) => void) {
     super('div', ['game'], {});
@@ -124,6 +49,7 @@ class GamePage extends BaseComponent {
     this.currentPoint = 1;
     this.words = [];
     this.puzzle = null;
+    this.puzzleParent = null;
     this.data = store.game.getActiveGame();
 
     const gameInfo = createGameInfo(this.data);
@@ -133,12 +59,15 @@ class GamePage extends BaseComponent {
     headGame.append(this.text, this.hints);
 
     const url = `${IMG_URL}${this.data.levelData.cutSrc}`;
+    this.gameWrapper = createGameWrapper();
     this.gameField = creatGameField(url);
     this.curRow = this.selectRow();
     this.wordsContainer = new BaseComponent('div', ['words-container']);
     this.containers = [];
 
-    this.append(gameInfo, headGame, this.gameField, this.wordsContainer);
+    this.gameWrapper.append(this.gameField, this.wordsContainer);
+
+    this.append(gameInfo, headGame, this.gameWrapper);
 
     this.selectSentence();
   }
@@ -190,24 +119,65 @@ class GamePage extends BaseComponent {
       arrWords.append(word);
 
       this.handlerPuzzle(word);
+      this.handlerTouch(word);
       this.handleCol(colResult);
+      this.handleCol(colContainer);
     });
 
     this.changeToRandom(arrWords);
+  }
+
+  private handlerTouch(wordPuzzle: BaseComponent): void {
+    let newParent: HTMLElement | null | undefined;
+    wordPuzzle.addListener('touchstart', (event: Event): void => {
+      if (!isNull(event.target) && isHTMLElement(event.target)) {
+        this.puzzle = event.target;
+        this.puzzleParent = event.target.parentNode;
+      }
+    });
+    wordPuzzle.addListener('touchmove', (event: Event): void => {
+      event.preventDefault();
+      if (isHTMLElement(this.puzzle)) {
+        addAbsolute(event, this.puzzle, this.puzzleParent, this.gameWrapper);
+        newParent = touchDrag(this.puzzle, this.curRow, this.puzzleParent);
+      }
+    });
+    wordPuzzle.addListener('touchend', (): void => {
+      if (isHTMLElement(this.puzzle) && isHTMLElement(this.puzzleParent)) {
+        if (!isUndefined(newParent) && !isNull(newParent)) {
+          const child = newParent.firstChild;
+          if (isHTMLElement(child) && this.puzzleParent.classList.contains('col-container')) {
+            removeAbsolute(this.puzzle);
+            return;
+          }
+          if (isHTMLElement(child) && this.puzzleParent.classList.contains('col-target')) {
+            this.puzzleParent.append(child);
+            changeWidth(this.puzzleParent, child);
+            newParent.append(this.puzzle);
+            removeAbsolute(this.puzzle);
+            changeWidth(newParent, this.puzzle);
+            return;
+          }
+          newParent.append(this.puzzle);
+          removeAbsolute(this.puzzle);
+          changeWidth(newParent, this.puzzle, this.puzzleParent);
+        } else {
+          removeAbsolute(this.puzzle);
+        }
+      }
+    });
   }
 
   private handlerPuzzle(wordPuzzle: BaseComponent): void {
     wordPuzzle.addListener('click', (event: Event): void => {
       if (!isNull(event.target) && isHTMLElement(event.target)) {
         const parent = event.target.parentNode;
-
         if (!isNull(parent) && isHTMLElement(parent)) {
           if (parent.classList.contains('col-target')) {
             const colParent = this.wordsContainer.getElement();
             changeColParent(colParent.childNodes, event.target, parent);
           }
         }
-
         if (!isNull(parent) && isHTMLElement(parent)) {
           if (parent.classList.contains('col-container')) {
             changeColParent(this.curRow.childNodes, event.target, parent);
@@ -220,18 +190,37 @@ class GamePage extends BaseComponent {
       dragStart(event);
       if (!isNull(event.target) && isHTMLElement(event.target)) {
         this.puzzle = event.target;
+        this.puzzleParent = event.target.parentNode;
+      }
+    });
+
+    wordPuzzle.addListener('dragend', (): void => {
+      if (!isNull(this.puzzle)) {
+        this.puzzle.classList.remove('hide');
       }
     });
   }
 
   private handleCol(col: BaseComponent): void {
     col.addListener('dragover', (event: Event): void => {
-      dragOver(event);
+      if (!isNull(this.puzzle)) {
+        dragOver(event, this.puzzle);
+      }
     });
+
+    col.addListener('dragenter', (event) => {
+      dragEnter(event);
+    });
+
+    col.addListener('dragleave', (event) => {
+      dragLeave(event);
+    });
+
     col.addListener('drop', (event) => {
       if (!isNull(this.puzzle) && isHTMLElement(event.target)) {
-        changeWidth(event.target, this.puzzle);
-        drop(event, this.puzzle);
+        if (!isNull(this.puzzleParent)) {
+          drop(event, this.puzzle, this.puzzleParent);
+        }
       }
     });
   }
