@@ -27,8 +27,10 @@ export const dragEnter = (event: Event): void => {
 
 export const dragLeave = (event: Event): void => {
   const active = event.target;
+
   if (!isNull(active) && isHTMLElement(active)) {
     active.classList.remove('active');
+    active.style.zIndex = '';
   }
 };
 
@@ -38,6 +40,8 @@ export const dragOver = (event: Event, curPuzzle: HTMLElement): void => {
 
     if (!isNull(parent) && isHTMLElement(parent)) {
       if (parent.id === event.target.id) {
+        const copy = curPuzzle;
+        copy.style.zIndex = '';
         return;
       }
       event.preventDefault();
@@ -47,6 +51,8 @@ export const dragOver = (event: Event, curPuzzle: HTMLElement): void => {
 
 export const drop = (event: Event, puzzle: HTMLElement, curPuzzleParent: ParentNode): void => {
   event.preventDefault();
+  const copy = puzzle;
+  copy.style.zIndex = '';
 
   if (
     event instanceof DragEvent &&
@@ -146,8 +152,10 @@ export const removeAbsolute = (puzzle: HTMLElement): void => {
 
 export const changeWidth = (col: HTMLElement, puzzle: HTMLElement, lastParent: HTMLElement | null = null): void => {
   const colCopy = col;
+  const copyPuzzle = puzzle;
   const copyLastParent = lastParent;
   const width = puzzle.getAttribute('data-width');
+  copyPuzzle.style.zIndex = '';
   if (typeof width === 'string') {
     colCopy.style.maxWidth = width;
     colCopy.style.minWidth = width;

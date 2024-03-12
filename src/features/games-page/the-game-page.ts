@@ -108,6 +108,12 @@ class GamePage extends BaseComponent {
     const arrWords = new BaseComponent('div');
     this.words.forEach((el, i) => {
       const word = new BaseComponent('div', ['col-img'], { id: `img-${i}`, draggable: 'true' }, el);
+      if (i > 0) {
+        word.setClasses(['tail-puzzle']);
+      }
+      if (i !== this.words.length - 1) {
+        word.setClasses(['head-puzzle']);
+      }
       const colResult = new BaseComponent('div', ['col', 'col-target'], { id: `target-${i}` });
       const colContainer = new BaseComponent('div', ['col', 'col-container'], { id: `container-${i}` });
 
@@ -191,6 +197,7 @@ class GamePage extends BaseComponent {
       if (!isNull(event.target) && isHTMLElement(event.target)) {
         this.puzzle = event.target;
         this.puzzleParent = event.target.parentNode;
+        this.puzzle.style.zIndex = '1';
       }
     });
 
