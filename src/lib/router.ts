@@ -12,21 +12,16 @@ export default class Router {
     private readonly notFoundComponent: () => Promise<BaseComponent>,
   ) {
     window.addEventListener('popstate', this.onHistoryChangeHandler);
-
-    const path = window.location.pathname.slice(1);
-
-    const pathName = path !== '' ? path : 'start';
-    this.navigateTo(pathName);
   }
 
   public destroy(): void {
     window.removeEventListener('popstate', this.onHistoryChangeHandler);
   }
 
-  public navigateTo(pathName: string, isSave = true): void {
+  public navigateTo(pathName: string): void {
     const { name: routeName } = this.changePage(pathName);
 
-    if (routeName === '404' || !isSave) {
+    if (routeName === '404') {
       window.history.replaceState(routeName, '', routeName);
     } else {
       window.history.pushState(routeName, '', routeName);
@@ -39,9 +34,7 @@ export default class Router {
       component: this.notFoundComponent,
     };
 
-    this.onHistoryChange(route).catch((error) => {
-      throw new Error(`${error} router onHistoryChange `);
-    });
+    this.onHistoryChange(route).catch(() => {});
 
     return route;
   }

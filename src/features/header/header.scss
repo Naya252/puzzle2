@@ -54,6 +54,16 @@
   gap: 16px;
 }
 
+.nav-link {
+  color: $light-color;
+  user-select: none;
+
+  &.active-nav {
+    color: $main-color;
+    pointer-events: none;
+  }
+}
+
 @media (width >= 768px) {
   .navbar-expand-md .navbar-collapse {
     justify-content: flex-end;

@@ -1,8 +1,8 @@
 import '@/features/games-page/game-page.scss';
 import BaseComponent from '@/components/base-component';
 import store from '@/store/store';
-import { type Round } from '@/types/types';
-import { IMG_URL } from '@/repository/game-repository';
+import { type Round, type Word, type GameData, type GameFullData } from '@/types/types';
+import { IMG_URL } from '@/shared/constants';
 import { isNull, isUndefined, isHTMLElement } from '@/utils/common-validator';
 import {
   createGameInfo,
@@ -23,6 +23,7 @@ import {
   changeWidth,
   changeColParent,
 } from '@/features/games-page/services/drag-and-drop-service';
+import { getStyles, changePuzzleHead, createData } from '@/features/games-page/services/game-service';
 
 const splitText = (text: string, operator: string): string[] => {
   const data = text.split(operator);
@@ -37,19 +38,20 @@ class GamePage extends BaseComponent {
   private readonly curRow: ChildNode;
   private readonly wordsContainer: BaseComponent;
   private readonly containers: HTMLElement[];
-  private currentPoint: number;
+  private readonly currentPoint: number;
   private readonly data: Round;
-  private words: string[];
+
   private puzzle: HTMLElement | null;
   private puzzleParent: ParentNode | null;
+  private gameData: Record<number, GameFullData>;
 
   constructor(pushRouter: (route: string, isAuth: boolean) => void) {
     super('div', ['game'], {});
 
     this.currentPoint = 1;
-    this.words = [];
     this.puzzle = null;
     this.puzzleParent = null;
+    this.gameData = {};
     this.data = store.game.getActiveGame();
 
     const gameInfo = createGameInfo(this.data);
@@ -58,9 +60,10 @@ class GamePage extends BaseComponent {
     const headGame = new BaseComponent('div', ['head']);
     headGame.append(this.text, this.hints);
 
-    const url = `${IMG_URL}${this.data.levelData.cutSrc}`;
     this.gameWrapper = createGameWrapper();
+    const url = `${IMG_URL}${this.data.levelData.cutSrc}`;
     this.gameField = creatGameField(url);
+
     this.curRow = this.selectRow();
     this.wordsContainer = new BaseComponent('div', ['words-container']);
     this.containers = [];
@@ -68,8 +71,13 @@ class GamePage extends BaseComponent {
     this.gameWrapper.append(this.gameField, this.wordsContainer);
 
     this.append(gameInfo, headGame, this.gameWrapper);
+    const resizeObserver = new ResizeObserver(() => {
+      this.changeWidthImg(this.currentPoint - 1).catch(() => {});
+    });
 
-    this.selectSentence();
+    resizeObserver.observe(this.gameField.getElement());
+
+    this.fillData();
   }
 
   private selectRow(): ChildNode {
@@ -81,56 +89,104 @@ class GamePage extends BaseComponent {
     return el;
   }
 
-  private changePoint(): void {
-    this.currentPoint += 1;
-  }
-
-  private selectSentence(): void {
-    const sentense = this.data.words[this.currentPoint];
+  private selectSentence(i: number): Word {
+    const sentense = this.data.words[i];
     if (sentense === undefined) {
       throw new Error('is undefined');
     }
 
-    this.changeText(sentense?.textExampleTranslate);
-    this.changeWords(sentense?.textExample);
+    return sentense;
   }
 
-  private changeText(text: string): void {
-    this.text.setTextContent(text);
+  private changeText(): void {
+    const data = this.gameData[this.currentPoint - 1];
+    if (!isUndefined(data) && !isNull(data)) {
+      const text = data.levelData.textExampleTranslate;
+      this.text.setTextContent(text);
+    }
   }
 
-  private changeWords(text: string): void {
-    this.words = splitText(text, ' ');
-    this.createHtmlWords();
+  private addPuzzleImg(
+    word: BaseComponent,
+    el: GameData,
+    sumWidth: number,
+    imgWidth: string,
+    imgHeight: string,
+    isLast: boolean,
+  ): number {
+    const rowWidth = imgWidth.slice(0, -2);
+    const rowHeight = Number(imgHeight.slice(0, -2)) / 10;
+    let copySum = sumWidth;
+
+    if (!isNull(el.widthPercents) && typeof el.widthPercents === 'number') {
+      const widthPixels = (Number(rowWidth) * Number(el.widthPercents)) / 100;
+      const heightPixels = rowHeight * (this.currentPoint - 1);
+      const url = `${IMG_URL}${this.data.levelData.cutSrc}`;
+      word.setAttributes({
+        style: `background-position-y: ${-heightPixels}px; background-position-x: ${-sumWidth}px; background-size: ${imgWidth} ${imgHeight}; background-repeat: no-repeat; background-image: url(${url});`,
+      });
+      copySum += widthPixels;
+
+      changePuzzleHead(copySum, heightPixels, rowHeight, word, url, imgWidth, imgHeight, isLast);
+    }
+    return copySum;
   }
 
-  private createHtmlWords(): void {
-    const arrWords = new BaseComponent('div');
-    this.words.forEach((el, i) => {
-      const word = new BaseComponent('div', ['col-img'], { id: `img-${i}`, draggable: 'true' }, el);
-      if (i > 0) {
-        word.setClasses(['tail-puzzle']);
-      }
-      if (i !== this.words.length - 1) {
-        word.setClasses(['head-puzzle']);
-      }
-      const colResult = new BaseComponent('div', ['col', 'col-target'], { id: `target-${i}` });
-      const colContainer = new BaseComponent('div', ['col', 'col-container'], { id: `container-${i}` });
+  private async changeWidthImg(idx: number): Promise<void> {
+    const data = this.gameData[idx];
+    if (!isNull(data) && !isUndefined(data)) {
+      const words = data.wordsFullData;
+      const imageField = this.gameField.getElement();
+      const styles = await getStyles(imageField);
+      let sumWidth = 0;
 
-      this.curRow.appendChild(colResult.getElement());
-      this.containers.push(colContainer.getElement());
+      words.forEach((el, i) => {
+        const isLast = i === words.length - 1;
+        if (!isNull(el.node)) {
+          sumWidth = this.addPuzzleImg(el.node, el, sumWidth, styles.width, styles.height, isLast);
+        }
+      });
+    }
+  }
 
-      this.wordsContainer.append(colContainer);
-      this.calculateWidthWord(word, el);
-      arrWords.append(word);
+  private createHtmlWords(idx: number): void {
+    const data = this.gameData[idx];
+    if (!isNull(data) && !isUndefined(data)) {
+      const words = data.wordsFullData;
 
-      this.handlerPuzzle(word);
-      this.handlerTouch(word);
-      this.handleCol(colResult);
-      this.handleCol(colContainer);
-    });
+      const arrWords = new BaseComponent('div');
 
-    this.changeToRandom(arrWords);
+      words.forEach((el, i) => {
+        const word = new BaseComponent(
+          'div',
+          ['col-img'],
+          { id: el.id, draggable: 'true', 'data-width': `${el.widthPercents}%` },
+          el.word,
+        );
+        if (i > 0) {
+          word.setClasses(['tail-puzzle']);
+        }
+        const colResult = new BaseComponent('div', ['col', 'col-target'], { id: `target-${i}` });
+        const colContainer = new BaseComponent('div', ['col', 'col-container'], { id: `container-${i}` });
+        this.curRow.appendChild(colResult.getElement());
+        this.containers.push(colContainer.getElement());
+        this.wordsContainer.append(colContainer);
+        const wordData = words[i];
+        if (!isUndefined(wordData)) {
+          wordData.node = word;
+        }
+        arrWords.append(word);
+        this.handlerPuzzle(word);
+        this.handlerTouch(word);
+        this.handleCol(colResult);
+        this.handleCol(colContainer);
+      });
+      this.changeWidthImg(idx)
+        .then(() => {
+          this.changeToRandom(arrWords);
+        })
+        .catch(() => {});
+    }
   }
 
   private handlerTouch(wordPuzzle: BaseComponent): void {
@@ -234,14 +290,14 @@ class GamePage extends BaseComponent {
 
   private changeToRandom(arrWords: BaseComponent): void {
     const parent = arrWords.getElement();
-    const children = parent.childNodes;
-    let { length } = children;
+    const children = Array.from(parent.childNodes);
+    children.sort(() => Math.random() - 0.5);
+
+    const { length } = children;
     let idx = 0;
 
-    while (length > 0) {
-      length -= 1;
-      const curIdx = Math.floor(Math.random() * length);
-      const el = children[curIdx];
+    while (idx < length) {
+      const el = children[idx];
 
       const colParent = this.containers[idx];
 
@@ -253,10 +309,41 @@ class GamePage extends BaseComponent {
     }
   }
 
-  private calculateWidthWord(word: BaseComponent, text: string): void {
-    const full = this.words.join('').length;
-    const el = word.getElement();
-    el.setAttribute('data-width', `${(text.length / full) * 100}%`);
+  private changeWords(lvlId: string, i: number): { data: Word; wordsFullData: GameData[] } {
+    const data = this.selectSentence(i);
+    const words = splitText(data?.textExample, ' ');
+    const wordsFullData: GameData[] = words.map((el, idx) => ({
+      id: `img_${lvlId}_${i}_${idx}`,
+      word: el,
+      length: el.length,
+      widthPercents: 1,
+      node: null,
+    }));
+    return { data, wordsFullData };
+  }
+
+  private fillData(): void {
+    let i = 0;
+    const lvlId = this.data.levelData.id;
+    const fillDataRecursively = (): void => {
+      if (i >= this.currentPoint) {
+        this.changeText();
+        return;
+      }
+
+      const { data, wordsFullData } = this.changeWords(lvlId, i);
+      createData(data.textExample, wordsFullData, this.gameField)
+        .then(() => {
+          const sentense: GameFullData = { levelData: data, wordsFullData };
+          this.gameData[i] = sentense;
+          this.createHtmlWords(i);
+          i += 1;
+          fillDataRecursively();
+        })
+        .catch(() => {});
+    };
+
+    fillDataRecursively();
   }
 }
 

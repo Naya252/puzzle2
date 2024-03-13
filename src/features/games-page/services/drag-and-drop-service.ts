@@ -130,9 +130,16 @@ export const addAbsolute = (
       copy.style.height = height;
       copy.style.maxHeight = height;
       copy.style.maxWidth = width;
-      copy.style.left = `${touch.pageX - wrapper.offsetTop - copy.offsetWidth}px`;
-      copy.style.top = `${touch.pageY - wrapper.offsetLeft - copy.offsetHeight - copy.offsetHeight / 2}px`;
       copy.style.position = 'absolute';
+      copy.style.zIndex = '3';
+      const isLandscape = window.matchMedia('(orientation: landscape)').matches;
+      if (isLandscape) {
+        copy.style.left = `${touch.pageX - wrapper.offsetTop - copy.offsetWidth / 2}px`;
+        copy.style.top = `${touch.pageY - wrapper.offsetHeight / 2 + copy.offsetHeight + copy.offsetHeight / 2}px`;
+      } else {
+        copy.style.left = `${touch.pageX - copy.offsetWidth}px`;
+        copy.style.top = `${touch.pageY - wrapper.offsetHeight / 2 - copy.offsetHeight / 2}px`;
+      }
     }
   }
 };
@@ -146,7 +153,8 @@ export const removeAbsolute = (puzzle: HTMLElement): void => {
     copy.style.height = '100%';
     copy.style.left = `auto`;
     copy.style.top = `auto`;
-    copy.style.position = 'static';
+    copy.style.position = 'relative';
+    copy.style.zIndex = '1';
   }
 };
 

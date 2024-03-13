@@ -1,6 +1,7 @@
 import Router, { type Route } from '@/lib/router';
 import { ROUTES } from '@/router/pathes';
 import type BaseComponent from '@/components/base-component';
+import store from '@/store/store';
 
 export default class AppRouter extends Router {
   public routerOutlet: BaseComponent;
@@ -61,20 +62,26 @@ export default class AppRouter extends Router {
     this.changeHeader = fn;
   }
 
-  public push(route: string, isAuth: boolean): void {
-    const isSave = false;
-
+  public push(route = '', isAuth = false): void {
     this.changeHeader();
+    let newRoute = route;
 
-    if (isAuth) {
-      if (route !== 'login') {
-        super.navigateTo(route);
-      } else {
-        super.navigateTo(ROUTES.Start, isSave);
+    if (newRoute === '') {
+      newRoute = window.location.pathname.slice(1);
+
+      if (!isAuth) {
+        newRoute = 'login';
+      }
+
+      if (newRoute === '') {
+        newRoute = 'start';
       }
     }
-    if (!isAuth) {
-      super.navigateTo('login', isSave);
-    }
+
+    super.navigateTo(newRoute);
+  }
+
+  public logout(): void {
+    this.push('login', store.user.hasUser());
   }
 }

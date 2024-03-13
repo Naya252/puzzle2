@@ -2,7 +2,7 @@ import BaseComponent from '@/components/base-component';
 import BaseButton from '@/components/base-button/base-button';
 import store from '@/store/store';
 import { type Round } from '@/types/types';
-import { IMG_URL } from '@/repository/game-repository';
+import { IMG_URL } from '@/shared/constants';
 
 export default class Cards extends BaseComponent {
   private readonly cb: VoidFunction;

@@ -1,14 +1,10 @@
 import { type NumLevel, type RoundsData } from '@/types/types';
+import { DATA_URL } from '@/shared/constants';
 import { isRoundsData } from './validation';
 
-const BASE_DATA_URL = `https://raw.githubusercontent.com/rolling-scopes-school/rss-puzzle-data/main/`;
-
-const URL = `${BASE_DATA_URL}data/wordCollectionLevel`;
-export const IMG_URL = `${BASE_DATA_URL}images/`;
-
-export async function fetchLevelData(level: NumLevel): Promise<RoundsData> {
+export default async function fetchLevelData(level: NumLevel): Promise<RoundsData> {
   try {
-    const response = await fetch(`${URL}${level}.json`);
+    const response = await fetch(`${DATA_URL}${level}.json`);
     if (!response.ok) {
       throw new Error('Failed to fetch data');
     }

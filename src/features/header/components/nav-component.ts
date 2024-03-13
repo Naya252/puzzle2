@@ -1,5 +1,5 @@
 import BaseComponent from '@/components/base-component';
-import Logo from '@/assets/vite.svg';
+import Logo from '@/assets/logo.svg';
 
 export default class NavComponent extends BaseComponent {
   constructor() {

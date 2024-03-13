@@ -1,7 +1,19 @@
 import BaseComponent from '@/components/base-component';
 
-export default function create404Page(): BaseComponent {
-  const notFoundPage = new BaseComponent('div', ['not-found-page'], {}, '404');
+class ErrorPage extends BaseComponent {
+  constructor() {
+    super('div', ['not-found-page', 'error-card'], {});
 
-  return notFoundPage;
+    const h1 = new BaseComponent('h1', ['title-error'], {}, '404');
+    const text = new BaseComponent('p', ['text-error'], {}, 'not found');
+
+    this.append(h1, text);
+  }
 }
+
+const createPage = (): BaseComponent => {
+  const page = new ErrorPage();
+  return page;
+};
+
+export default createPage;

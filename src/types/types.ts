@@ -1,3 +1,5 @@
+import type BaseComponent from '@/components/base-component';
+
 export type NumLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
 export type RoundsData = {
@@ -29,3 +31,13 @@ export type UserType = {
   name: string;
   surname: string;
 };
+
+export type GameData = {
+  id: string;
+  word: string;
+  length: number;
+  widthPercents: number;
+  node: null | BaseComponent;
+};
+
+export type GameFullData = { levelData: Word; wordsFullData: GameData[] };

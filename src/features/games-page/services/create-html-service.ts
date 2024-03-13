@@ -28,8 +28,9 @@ export const createGameWrapper = (): BaseComponent => {
 
 export const creatGameField = (url: string): BaseComponent => {
   const gameField = new BaseComponent('div', ['game-field']);
-  // const game = gameField.getElement();
-  // game.style.background = `#464849 center / contain no-repeat url(${url})`;
+  const game = gameField.getElement();
+
+  game.style.background = `#464849 center / contain no-repeat url(${url})`;
 
   let i = 0;
   while (i < 10) {

@@ -15,6 +15,7 @@ export default class App {
   private readonly appContainer: BaseComponent;
   private readonly router: AppRouter;
   private readonly header: HeaderComponent;
+  private readonly links: HTMLElement[];
 
   constructor() {
     this.appContainer = new BaseComponent('div', ['app']);
@@ -22,8 +23,9 @@ export default class App {
     this.header = new HeaderComponent();
     const content = new BaseComponent('div', ['content', 'container']);
     const footer = new FooterComponent();
+    this.links = this.createLinks();
 
-    this.header.appendLinks(...this.createLinks());
+    this.header.appendLinks(...this.links);
     this.appContainer.append(videoLayer, this.header, content, footer);
     this.router = new AppRouter(content, () => {
       this.header.changeHeader();
@@ -42,17 +44,27 @@ export default class App {
     getLevel(lvl)
       .then(() => {
         initDefaultGame(lvl);
+        this.router.push('', store.user.hasUser());
+
+        const active = this.links.find(
+          (el) => el.textContent?.toLocaleLowerCase() === window.location.pathname.slice(1),
+        );
+        active?.classList.add('active-nav');
       })
       .catch(() => {
         throw new Error('error of fetch data');
       });
-
-    this.router.push(ROUTES.Start, store.user.hasUser());
   }
 
   protected destroy(): void {
     this.appContainer.remove();
     this.router.destroy();
+  }
+
+  private removeActiveLink(): void {
+    this.links.forEach((el) => {
+      el.classList.remove('active-nav');
+    });
   }
 
   private createLinks(): HTMLElement[] {
@@ -63,11 +75,14 @@ export default class App {
         event.preventDefault();
         this.router.push(route, store.user.hasUser());
 
+        this.removeActiveLink();
+        link.setClasses(['active-nav']);
+
         const el = link.getElement();
 
         if (el.id === 'login') {
           removeUser();
-          this.router.push('login', store.user.hasUser());
+          this.router.logout();
         }
       });
 
