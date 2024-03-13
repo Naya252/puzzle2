@@ -151,6 +151,10 @@
   }
 }
 
+.block {
+  pointer-events: none;
+}
+
 .buttons-container {
   display: flex;
   gap: 32px;
@@ -160,6 +164,23 @@
 .autocomplete-btn {
   align-self: center;
   max-width: 200px;
+}
+
+.check-btn.continue {
+  &:after {
+    content: '➞';
+    font-size: 28px;
+    position: absolute;
+    right: 32px;
+    top: calc(50% - 20px);
+    transition: all 0.5s linear;
+  }
+
+  &.moveArrow {
+    &:after {
+      transform: translateX(16px);
+    }
+  }
 }
 
 .btn-pz-primary.outlined.autocomplete-btn {

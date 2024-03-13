@@ -90,10 +90,42 @@ class GamePage extends BaseComponent {
   }
 
   private checkListener(): void {
-    this.checkBtn.addListener('click', () => {
-      const isCorrect = this.isCorrectSentense();
-      console.log('add counter true', isCorrect);
+    this.checkBtn.addListener('click', (e) => {
+      if (!isNull(e.target) && isHTMLElement(e.target)) {
+        if (e.target.textContent === 'Check') {
+          const isCorrect = this.isCorrectSentense();
+          console.log('add counter true', isCorrect);
+          if (isCorrect) {
+            this.continueGame();
+          }
+        } else {
+          console.log('start new');
+        }
+      }
     });
+  }
+
+  private addBlock(i: number): void {
+    const data = this.gameData[i];
+    if (!isUndefined(data) && !isNull(data)) {
+      const words = data.wordsFullData;
+      words.forEach((el) => {
+        const child = el.node;
+        child?.setClasses(['block']);
+      });
+    }
+  }
+
+  private continueGame(): void {
+    this.addBlock(this.currentPoint - 1);
+    this.autoCompleteBtn.setAttributes({ disabled: 'true' });
+    this.checkBtn.setClasses(['continue']);
+    setTimeout(() => {
+      this.checkBtn.setClasses(['moveArrow']);
+    }, 300);
+    const checkBtn = this.checkBtn.getElement();
+    checkBtn.removeAttribute('disabled');
+    checkBtn.textContent = 'Continue';
   }
 
   private autocompleteListener(): void {
@@ -112,6 +144,8 @@ class GamePage extends BaseComponent {
         });
         this.isCorrectSentense();
         console.log('add counter false');
+
+        this.continueGame();
       }
     });
   }
