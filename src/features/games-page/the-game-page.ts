@@ -42,6 +42,7 @@ class GamePage extends BaseComponent {
   private readonly currentPoint: number;
   private readonly data: Round;
   private readonly checkBtn: BaseButton;
+  private readonly autoCompleteBtn: BaseButton;
 
   private puzzle: HTMLElement | null;
   private puzzleParent: ParentNode | null;
@@ -72,29 +73,52 @@ class GamePage extends BaseComponent {
 
     this.gameWrapper.append(this.gameField, this.wordsContainer);
 
+    const btnContainer = new BaseComponent('div', ['buttons-container']);
     this.checkBtn = new BaseButton('button', 'Check', ['check-btn', 'outlined'], { disabled: 'true' });
     this.checkListener();
+    this.autoCompleteBtn = new BaseButton('button', `I don't know`, ['autocomplete-btn', 'outlined']);
+    this.autocompleteListener();
+    btnContainer.append(this.autoCompleteBtn, this.checkBtn);
 
-    this.append(gameInfo, headGame, this.gameWrapper, this.checkBtn);
+    this.append(gameInfo, headGame, this.gameWrapper, btnContainer);
     const resizeObserver = new ResizeObserver(() => {
       this.changeWidthImg(this.currentPoint - 1).catch(() => {});
     });
 
     resizeObserver.observe(this.gameField.getElement());
-
     this.fillData();
   }
 
   private checkListener(): void {
     this.checkBtn.addListener('click', () => {
       const isCorrect = this.isCorrectSentense();
-      console.log(isCorrect);
+      console.log('add counter true', isCorrect);
+    });
+  }
+
+  private autocompleteListener(): void {
+    this.autoCompleteBtn.addListener('click', () => {
+      const data = this.gameData[this.currentPoint - 1];
+      if (!isUndefined(data) && !isNull(data)) {
+        const words = data.wordsFullData;
+        const cols = Array.from(this.curRow.childNodes);
+        cols.forEach((el, i) => {
+          const child = words[i]?.node;
+          const elChild = child?.getElement();
+          if (!isUndefined(elChild) && isHTMLElement(el)) {
+            el.appendChild(elChild);
+            changeWidth(el, elChild);
+          }
+        });
+        this.isCorrectSentense();
+        console.log('add counter false');
+      }
     });
   }
 
   private isFullSentence(): void {
     const arr = Array.from(this.curRow.childNodes);
-    const isFull = arr.every((el, i) => {
+    const isFull = arr.every((el) => {
       const img = el.firstChild;
       return !isNull(img);
     });

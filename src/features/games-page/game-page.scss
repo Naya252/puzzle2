@@ -115,11 +115,11 @@
   }
 
   &.valid {
-    border-bottom-color: rgb(116, 190, 4);
+    border-bottom-color: $success-bright-color;
   }
 
   &.invalid {
-    border-bottom-color: rgb(172, 1, 1);
+    border-bottom-color: $error-bright-color;
   }
 }
 
@@ -150,9 +150,35 @@
     background-color: rgba($main-color, 0.5);
   }
 }
-.check-btn {
+
+.buttons-container {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+}
+.check-btn,
+.autocomplete-btn {
   align-self: center;
   max-width: 200px;
+}
+
+.btn-pz-primary.outlined.autocomplete-btn {
+  background-color: rgba($error-bright-color, 0.3);
+  border: 2px solid rgba($dark-color, 0.5);
+  color: $dark-color;
+
+  &:hover,
+  &:focus {
+    background-color: rgba($error-bright-color, 0.8);
+    filter: brightness(1.2);
+    color: $light-color;
+  }
+
+  &:active {
+    background-color: rgba($error-bright-color, 0.9);
+    filter: brightness(1);
+    color: $light-color;
+  }
 }
 
 .hide {
