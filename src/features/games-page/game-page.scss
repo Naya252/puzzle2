@@ -113,6 +113,14 @@
       2px 8px 6px rgb(0 0 0 / 20%),
       0 -5px 35px rgba($dark-color, 0.4);
   }
+
+  &.valid {
+    border-bottom-color: rgb(116, 190, 4);
+  }
+
+  &.invalid {
+    border-bottom-color: rgb(172, 1, 1);
+  }
 }
 
 .col.col-target {
@@ -141,6 +149,10 @@
     background-blend-mode: luminosity;
     background-color: rgba($main-color, 0.5);
   }
+}
+.check-btn {
+  align-self: center;
+  max-width: 200px;
 }
 
 .hide {

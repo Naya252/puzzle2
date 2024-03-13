@@ -17,3 +17,34 @@
     filter: brightness(1);
   }
 }
+
+.btn-pz-primary.outlined {
+  width: 100%;
+  margin-top: 16px;
+  background-color: rgba($accent-color, 0.1);
+  filter: brightness(1);
+  border: 2px solid $accent-color;
+  color: $accent-color;
+  font-weight: 600;
+  font-size: 1.1rem;
+
+  &:hover,
+  &:focus {
+    background-color: $accent-color;
+    filter: brightness(1.2);
+    color: $light-color;
+  }
+
+  &:active {
+    background-color: $accent-color !important;
+    filter: brightness(1);
+    color: $light-color;
+  }
+
+  &:disabled {
+    background-color: rgba($dark-color, 0.1);
+    filter: brightness(1);
+    color: rgba($dark-color, 0.8);
+    border: 2px solid rgba($dark-color, 0.6);
+  }
+}

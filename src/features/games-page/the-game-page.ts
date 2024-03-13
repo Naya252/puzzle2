@@ -24,6 +24,7 @@ import {
   changeColParent,
 } from '@/features/games-page/services/drag-and-drop-service';
 import { getStyles, changePuzzleHead, createData } from '@/features/games-page/services/game-service';
+import BaseButton from '@/components/base-button/base-button';
 
 const splitText = (text: string, operator: string): string[] => {
   const data = text.split(operator);
@@ -40,6 +41,7 @@ class GamePage extends BaseComponent {
   private readonly containers: HTMLElement[];
   private readonly currentPoint: number;
   private readonly data: Round;
+  private readonly checkBtn: BaseButton;
 
   private puzzle: HTMLElement | null;
   private puzzleParent: ParentNode | null;
@@ -70,7 +72,10 @@ class GamePage extends BaseComponent {
 
     this.gameWrapper.append(this.gameField, this.wordsContainer);
 
-    this.append(gameInfo, headGame, this.gameWrapper);
+    this.checkBtn = new BaseButton('button', 'Check', ['check-btn', 'outlined'], { disabled: 'true' });
+    this.checkListener();
+
+    this.append(gameInfo, headGame, this.gameWrapper, this.checkBtn);
     const resizeObserver = new ResizeObserver(() => {
       this.changeWidthImg(this.currentPoint - 1).catch(() => {});
     });
@@ -78,6 +83,61 @@ class GamePage extends BaseComponent {
     resizeObserver.observe(this.gameField.getElement());
 
     this.fillData();
+  }
+
+  private checkListener(): void {
+    this.checkBtn.addListener('click', () => {
+      const isCorrect = this.isCorrectSentense();
+      console.log(isCorrect);
+    });
+  }
+
+  private isFullSentence(): void {
+    const arr = Array.from(this.curRow.childNodes);
+    const isFull = arr.every((el, i) => {
+      const img = el.firstChild;
+      return !isNull(img);
+    });
+
+    const btn = this.checkBtn.getElement();
+
+    if (isFull) {
+      btn.removeAttribute('disabled');
+    } else {
+      btn.setAttribute('disabled', 'true');
+    }
+  }
+
+  private isCorrectSentense(): boolean {
+    const arr = Array.from(this.curRow.childNodes);
+    const isCorrect = arr.every((el, i) => {
+      const img = el.firstChild;
+      if (img !== null) {
+        if (img instanceof HTMLElement) {
+          const id = img.id.split('_');
+          return Number(id[id.length - 1]) === i;
+        }
+      }
+      return false;
+    });
+
+    arr.forEach((el, i) => {
+      const img = el.firstChild;
+      if (img !== null) {
+        if (img instanceof HTMLElement) {
+          const id = img.id.split('_');
+          if (Number(id[id.length - 1]) === i) {
+            img.classList.remove('invalid');
+            img.classList.add('valid');
+          } else {
+            img.classList.remove('valid');
+            img.classList.add('invalid');
+          }
+        }
+      }
+    });
+
+    return isCorrect;
   }
 
   private selectRow(): ChildNode {
@@ -221,12 +281,11 @@ class GamePage extends BaseComponent {
             return;
           }
           newParent.append(this.puzzle);
-          removeAbsolute(this.puzzle);
           changeWidth(newParent, this.puzzle, this.puzzleParent);
-        } else {
-          removeAbsolute(this.puzzle);
         }
+        removeAbsolute(this.puzzle);
       }
+      this.isFullSentence();
     });
   }
 
@@ -245,6 +304,8 @@ class GamePage extends BaseComponent {
             changeColParent(this.curRow.childNodes, event.target, parent);
           }
         }
+
+        this.isFullSentence();
       }
     });
 
@@ -260,6 +321,7 @@ class GamePage extends BaseComponent {
     wordPuzzle.addListener('dragend', (): void => {
       if (!isNull(this.puzzle)) {
         this.puzzle.classList.remove('hide');
+        this.isFullSentence();
       }
     });
   }
