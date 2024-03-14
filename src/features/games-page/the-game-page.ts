@@ -53,6 +53,7 @@ class GamePage extends BaseComponent {
   private gameData: Record<number, GameFullData>;
 
   constructor(pushRouter: (route: string, isAuth: boolean) => void) {
+    console.log(pushRouter);
     super('div', ['game'], {});
     this.puzzle = null;
     this.puzzleParent = null;
