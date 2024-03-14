@@ -1,6 +1,7 @@
 import type BaseComponent from '@/components/base-component';
 
-export type NumLevel = 1 | 2 | 3 | 4 | 5 | 6;
+export type NumLevel = 0 | 1 | 2 | 3 | 4 | 5;
+export type NumSentence = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
 export type RoundsData = {
   rounds: Round[];
@@ -25,6 +26,7 @@ export type Word = {
   textExampleTranslate: string;
   word: string;
   wordTranslate: string;
+  isWin?: boolean;
 };
 
 export type UserType = {

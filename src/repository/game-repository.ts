@@ -4,7 +4,7 @@ import { isRoundsData } from './validation';
 
 export default async function fetchLevelData(level: NumLevel): Promise<RoundsData> {
   try {
-    const response = await fetch(`${DATA_URL}${level}.json`);
+    const response = await fetch(`${DATA_URL}${level + 1}.json`);
     if (!response.ok) {
       throw new Error('Failed to fetch data');
     }

@@ -1,14 +1,16 @@
 import '@/features/games-page/game-page.scss';
 import BaseComponent from '@/components/base-component';
 import store from '@/store/store';
-import { type Round, type Word, type GameData, type GameFullData } from '@/types/types';
+import { type Round, type Word, type GameData, type GameFullData, type NumSentence } from '@/types/types';
 import { IMG_URL } from '@/shared/constants';
-import { isNull, isUndefined, isHTMLElement } from '@/utils/common-validator';
+import { isNull, isUndefined, isHTMLElement, isNumSentence, isNumLevel } from '@/utils/common-validator';
 import {
   createGameInfo,
+  changeTitle,
   createHints,
-  creatText,
+  createText,
   creatGameField,
+  changeGamefield,
   createGameWrapper,
 } from '@/features/games-page/services/create-html-service';
 import {
@@ -23,7 +25,7 @@ import {
   changeWidth,
   changeColParent,
 } from '@/features/games-page/services/drag-and-drop-service';
-import { getStyles, changePuzzleHead, createData } from '@/features/games-page/services/game-service';
+import { getStyles, changePuzzleHead, createData, getLevel } from '@/features/games-page/services/game-service';
 import BaseButton from '@/components/base-button/base-button';
 
 const splitText = (text: string, operator: string): string[] => {
@@ -32,15 +34,17 @@ const splitText = (text: string, operator: string): string[] => {
 };
 
 class GamePage extends BaseComponent {
+  private readonly gameInfo: BaseComponent;
   private readonly text: BaseComponent;
   private readonly hints: BaseComponent;
   private readonly gameWrapper: BaseComponent;
   private readonly gameField: BaseComponent;
-  private readonly curRow: ChildNode;
+  private curRow: ChildNode;
+  private readonly arrWords: BaseComponent;
   private readonly wordsContainer: BaseComponent;
-  private readonly containers: HTMLElement[];
-  private readonly currentPoint: number;
-  private readonly data: Round;
+  private containers: HTMLElement[];
+  private currentPoint: NumSentence;
+  private data: Round;
   private readonly checkBtn: BaseButton;
   private readonly autoCompleteBtn: BaseButton;
 
@@ -50,24 +54,24 @@ class GamePage extends BaseComponent {
 
   constructor(pushRouter: (route: string, isAuth: boolean) => void) {
     super('div', ['game'], {});
-
-    this.currentPoint = 1;
     this.puzzle = null;
     this.puzzleParent = null;
     this.gameData = {};
     this.data = store.game.getActiveGame();
+    this.currentPoint = store.game.getActiveSentence();
+    this.arrWords = new BaseComponent('div');
 
-    const gameInfo = createGameInfo(this.data);
+    this.gameInfo = createGameInfo(this.data);
     this.hints = createHints();
-    this.text = creatText();
+    this.text = createText();
     const headGame = new BaseComponent('div', ['head']);
     headGame.append(this.text, this.hints);
 
     this.gameWrapper = createGameWrapper();
-    const url = `${IMG_URL}${this.data.levelData.cutSrc}`;
+    const url = this.getUrl();
     this.gameField = creatGameField(url);
 
-    this.curRow = this.selectRow();
+    this.curRow = this.selectRow(0);
     this.wordsContainer = new BaseComponent('div', ['words-container']);
     this.containers = [];
 
@@ -80,13 +84,17 @@ class GamePage extends BaseComponent {
     this.autocompleteListener();
     btnContainer.append(this.autoCompleteBtn, this.checkBtn);
 
-    this.append(gameInfo, headGame, this.gameWrapper, btnContainer);
+    this.append(this.gameInfo, headGame, this.gameWrapper, btnContainer);
     const resizeObserver = new ResizeObserver(() => {
-      this.changeWidthImg(this.currentPoint - 1).catch(() => {});
+      this.changeWidthImg(this.currentPoint).catch(() => {});
     });
-
     resizeObserver.observe(this.gameField.getElement());
-    this.fillData();
+    this.initFirstGame().catch(() => {});
+  }
+
+  private getUrl(): string {
+    const url = `${IMG_URL}${this.data.levelData.cutSrc}`;
+    return url;
   }
 
   private checkListener(): void {
@@ -94,18 +102,18 @@ class GamePage extends BaseComponent {
       if (!isNull(e.target) && isHTMLElement(e.target)) {
         if (e.target.textContent === 'Check') {
           const isCorrect = this.isCorrectSentense();
-          console.log('add counter true', isCorrect);
           if (isCorrect) {
-            this.continueGame();
+            this.changeWinData(isCorrect);
           }
         } else {
-          console.log('start new');
+          this.changeToDefault();
+          this.changeCurrentPoint();
         }
       }
     });
   }
 
-  private addBlock(i: number): void {
+  private addBlock(i: NumSentence): void {
     const data = this.gameData[i];
     if (!isUndefined(data) && !isNull(data)) {
       const words = data.wordsFullData;
@@ -116,8 +124,150 @@ class GamePage extends BaseComponent {
     }
   }
 
+  private changeWinData(isWin: boolean): void {
+    const data = this.gameData[this.currentPoint];
+    if (!isUndefined(data) && !isNull(data)) {
+      const { levelData } = data;
+      levelData.isWin = isWin;
+      this.continueGame();
+    }
+  }
+
+  private async initFirstGame(i = 0): Promise<void> {
+    if (i < this.currentPoint) {
+      if (isNumSentence(i)) {
+        this.curRow = this.selectRow(i);
+        await this.fillData(i);
+
+        this.createHtmlWords(i);
+        await this.changeWidthImg(i);
+        this.changeToRandom(this.arrWords);
+        this.completeSentence(i);
+        this.addBlock(i);
+      }
+      await this.initFirstGame(i + 1);
+    } else {
+      this.startNewGame().catch(() => {});
+    }
+  }
+
+  private changeToDefault(): void {
+    const autoCompleteBtn = this.autoCompleteBtn.getElement();
+    autoCompleteBtn.removeAttribute('disabled');
+
+    const checkBtn = this.checkBtn.getElement();
+    checkBtn.setAttribute('disabled', 'true');
+    checkBtn.textContent = 'Check';
+    checkBtn.classList.remove('continue');
+    checkBtn.classList.remove('moveArrow');
+
+    const arr = Array.from(this.curRow.childNodes);
+    arr.forEach((el) => {
+      const img = el.firstChild;
+      if (img !== null) {
+        if (img instanceof HTMLElement) {
+          img.classList.remove('valid');
+          img.classList.remove('invalid');
+        }
+      }
+    });
+  }
+
+  private goTonextRound(): void {
+    const curLvl = store.game.getActiveLevel();
+    const levelData = store.game.getLevelData(curLvl);
+
+    if (!isNull(levelData)) {
+      const curRound = store.game.getActiveRound();
+      const nextRound = curRound + 1;
+      const { rounds } = levelData;
+
+      if (rounds.length === nextRound) {
+        this.changeLevel();
+      } else {
+        const round = rounds[nextRound];
+
+        if (isUndefined(round)) {
+          return;
+        }
+        this.changeRound(nextRound, round);
+      }
+    }
+  }
+
+  private changeLevel(): void {
+    const curLvl = store.game.getActiveLevel();
+    let lvl = 0;
+    if (curLvl < 5) {
+      lvl = curLvl + 1;
+    }
+    if (!isNumLevel(lvl)) {
+      return;
+    }
+    getLevel(lvl)
+      .then(() => {
+        const levelData = store.game.getLevelData(lvl);
+
+        if (!isNull(levelData)) {
+          const { rounds } = levelData;
+          const round = rounds[0];
+
+          if (!isUndefined(round) && isNumLevel(lvl)) {
+            store.game.setActiveLevel(lvl);
+            store.game.setActiveRound(0);
+            store.game.setActiveGame(round);
+            store.game.setActiveSentence(0);
+            this.currentPoint = store.game.getActiveSentence();
+            this.data = store.game.getActiveGame();
+            this.containers = [];
+            const url = this.getUrl();
+            changeGamefield(url, this.gameField);
+            this.startNewGame().catch(() => {});
+            changeTitle(this.gameInfo, this.data);
+          }
+        }
+      })
+      .catch(() => {});
+  }
+
+  private changeRound(nextRound: number, round: Round): void {
+    store.game.setActiveRound(nextRound);
+    store.game.setActiveGame(round);
+
+    this.data = store.game.getActiveGame();
+
+    store.game.setActiveSentence(0);
+    this.currentPoint = store.game.getActiveSentence();
+    this.containers = [];
+    const url = this.getUrl();
+    changeGamefield(url, this.gameField);
+    this.startNewGame().catch(() => {});
+    changeTitle(this.gameInfo, this.data);
+  }
+
+  private changeCurrentPoint(): void {
+    this.currentPoint += 1;
+    if (isNumSentence(this.currentPoint)) {
+      store.game.setActiveSentence(this.currentPoint);
+      this.startNewGame().catch(() => {});
+    } else {
+      this.goTonextRound();
+    }
+  }
+
+  private async startNewGame(): Promise<void> {
+    this.curRow = this.selectRow(this.currentPoint);
+    await this.fillData(this.currentPoint);
+
+    this.createHtmlWords(this.currentPoint);
+    await this.changeWidthImg(this.currentPoint);
+    this.changeToRandom(this.arrWords);
+
+    this.changeText();
+  }
+
   private continueGame(): void {
-    this.addBlock(this.currentPoint - 1);
+    this.addBlock(this.currentPoint);
     this.autoCompleteBtn.setAttributes({ disabled: 'true' });
     this.checkBtn.setClasses(['continue']);
     setTimeout(() => {
@@ -130,24 +280,26 @@ class GamePage extends BaseComponent {
 
   private autocompleteListener(): void {
     this.autoCompleteBtn.addListener('click', () => {
-      const data = this.gameData[this.currentPoint - 1];
-      if (!isUndefined(data) && !isNull(data)) {
-        const words = data.wordsFullData;
-        const cols = Array.from(this.curRow.childNodes);
-        cols.forEach((el, i) => {
-          const child = words[i]?.node;
-          const elChild = child?.getElement();
-          if (!isUndefined(elChild) && isHTMLElement(el)) {
-            el.appendChild(elChild);
-            changeWidth(el, elChild);
-          }
-        });
-        this.isCorrectSentense();
-        console.log('add counter false');
-
-        this.continueGame();
-      }
+      this.completeSentence(this.currentPoint);
+      this.isCorrectSentense();
+      this.changeWinData(false);
     });
+  }
+
+  private completeSentence(idx: NumSentence): void {
+    const data = this.gameData[idx];
+    if (!isUndefined(data) && !isNull(data)) {
+      const words = data.wordsFullData;
+      const cols = Array.from(this.curRow.childNodes);
+      cols.forEach((el, i) => {
+        const child = words[i]?.node;
+        const elChild = child?.getElement();
+        if (!isUndefined(elChild) && isHTMLElement(el)) {
+          el.appendChild(elChild);
+          changeWidth(el, elChild);
+        }
+      });
+    }
   }
 
   private isFullSentence(): void {
@@ -198,16 +350,16 @@ class GamePage extends BaseComponent {
     return isCorrect;
   }
 
-  private selectRow(): ChildNode {
+  private selectRow(i: NumSentence): ChildNode {
     const game = this.gameField.getElement();
-    const el = game.childNodes[this.currentPoint - 1];
+    const el = game.childNodes[i];
     if (isUndefined(el)) {
       throw new Error('is undefined');
     }
     return el;
   }
 
-  private selectSentence(i: number): Word {
+  private selectSentence(i: NumSentence): Word {
     const sentense = this.data.words[i];
     if (sentense === undefined) {
       throw new Error('is undefined');
@@ -217,7 +369,7 @@ class GamePage extends BaseComponent {
   }
 
   private changeText(): void {
-    const data = this.gameData[this.currentPoint - 1];
+    const data = this.gameData[this.currentPoint];
     if (!isUndefined(data) && !isNull(data)) {
       const text = data.levelData.textExampleTranslate;
       this.text.setTextContent(text);
@@ -225,6 +377,7 @@ class GamePage extends BaseComponent {
   }
 
   private addPuzzleImg(
+    idx: NumSentence,
     word: BaseComponent,
     el: GameData,
     sumWidth: number,
@@ -238,8 +391,8 @@ class GamePage extends BaseComponent {
 
     if (!isNull(el.widthPercents) && typeof el.widthPercents === 'number') {
       const widthPixels = (Number(rowWidth) * Number(el.widthPercents)) / 100;
-      const heightPixels = rowHeight * (this.currentPoint - 1);
-      const url = `${IMG_URL}${this.data.levelData.cutSrc}`;
+      const heightPixels = rowHeight * idx;
+      const url = this.getUrl();
       word.setAttributes({
         style: `background-position-y: ${-heightPixels}px; background-position-x: ${-sumWidth}px; background-size: ${imgWidth} ${imgHeight}; background-repeat: no-repeat; background-image: url(${url});`,
       });
@@ -250,7 +403,7 @@ class GamePage extends BaseComponent {
     return copySum;
   }
 
-  private async changeWidthImg(idx: number): Promise<void> {
+  private async changeWidthImg(idx: NumSentence): Promise<void> {
     const data = this.gameData[idx];
     if (!isNull(data) && !isUndefined(data)) {
       const words = data.wordsFullData;
@@ -261,18 +414,19 @@ class GamePage extends BaseComponent {
       words.forEach((el, i) => {
         const isLast = i === words.length - 1;
         if (!isNull(el.node)) {
-          sumWidth = this.addPuzzleImg(el.node, el, sumWidth, styles.width, styles.height, isLast);
+          sumWidth = this.addPuzzleImg(idx, el.node, el, sumWidth, styles.width, styles.height, isLast);
         }
       });
     }
   }
 
-  private createHtmlWords(idx: number): void {
+  private createHtmlWords(idx: NumSentence): void {
     const data = this.gameData[idx];
+    this.wordsContainer.setHTML('');
+    this.arrWords.setHTML('');
+
     if (!isNull(data) && !isUndefined(data)) {
       const words = data.wordsFullData;
-
-      const arrWords = new BaseComponent('div');
 
       words.forEach((el, i) => {
         const word = new BaseComponent(
@@ -284,26 +438,24 @@ class GamePage extends BaseComponent {
         if (i > 0) {
           word.setClasses(['tail-puzzle']);
         }
-        const colResult = new BaseComponent('div', ['col', 'col-target'], { id: `target-${i}` });
+        const colResult = new BaseComponent('div', ['col', 'col-target'], { id: `target-${idx}-${i}` });
         const colContainer = new BaseComponent('div', ['col', 'col-container'], { id: `container-${i}` });
         this.curRow.appendChild(colResult.getElement());
+
         this.containers.push(colContainer.getElement());
         this.wordsContainer.append(colContainer);
+
         const wordData = words[i];
         if (!isUndefined(wordData)) {
           wordData.node = word;
         }
-        arrWords.append(word);
+        this.arrWords.append(word);
+
         this.handlerPuzzle(word);
         this.handlerTouch(word);
         this.handleCol(colResult);
         this.handleCol(colContainer);
       });
-      this.changeWidthImg(idx)
-        .then(() => {
-          this.changeToRandom(arrWords);
-        })
-        .catch(() => {});
     }
   }
 
@@ -411,6 +563,8 @@ class GamePage extends BaseComponent {
   private changeToRandom(arrWords: BaseComponent): void {
     const parent = arrWords.getElement();
     const children = Array.from(parent.childNodes);
+    const colParents = this.wordsContainer.getElement();
+
     children.sort(() => Math.random() - 0.5);
 
     const { length } = children;
@@ -418,18 +572,18 @@ class GamePage extends BaseComponent {
 
     while (idx < length) {
       const el = children[idx];
+      const colParent = colParents.childNodes[idx];
 
-      const colParent = this.containers[idx];
-
-      if (!isUndefined(el) && isHTMLElement(el) && !isUndefined(colParent)) {
+      if (!isUndefined(el) && isHTMLElement(el) && !isUndefined(colParent) && isHTMLElement(colParent)) {
         changeWidth(colParent, el);
         colParent.append(el);
+
         idx += 1;
       }
     }
   }
 
-  private changeWords(lvlId: string, i: number): { data: Word; wordsFullData: GameData[] } {
+  private changeWords(lvlId: string, i: NumSentence): { data: Word; wordsFullData: GameData[] } {
     const data = this.selectSentence(i);
     const words = splitText(data?.textExample, ' ');
     const wordsFullData: GameData[] = words.map((el, idx) => ({
@@ -442,28 +596,13 @@ class GamePage extends BaseComponent {
     return { data, wordsFullData };
   }
 
-  private fillData(): void {
-    let i = 0;
+  private async fillData(i: NumSentence): Promise<void> {
     const lvlId = this.data.levelData.id;
-    const fillDataRecursively = (): void => {
-      if (i >= this.currentPoint) {
-        this.changeText();
-        return;
-      }
+    const { data, wordsFullData } = this.changeWords(lvlId, i);
 
-      const { data, wordsFullData } = this.changeWords(lvlId, i);
-      createData(data.textExample, wordsFullData, this.gameField)
-        .then(() => {
-          const sentense: GameFullData = { levelData: data, wordsFullData };
-          this.gameData[i] = sentense;
-          this.createHtmlWords(i);
-          i += 1;
-          fillDataRecursively();
-        })
-        .catch(() => {});
-    };
-
-    fillDataRecursively();
+    await createData(data.textExample, wordsFullData, this.gameField);
+    const sentense: GameFullData = { levelData: data, wordsFullData };
+    this.gameData[i] = sentense;
   }
 }
 

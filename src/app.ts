@@ -24,6 +24,7 @@ export default class App {
     const content = new BaseComponent('div', ['content', 'container']);
     const footer = new FooterComponent();
     this.links = this.createLinks();
+    store.game.setLinks(this.links);
 
     this.header.appendLinks(...this.links);
     this.appContainer.append(videoLayer, this.header, content, footer);
@@ -61,12 +62,6 @@ export default class App {
     this.router.destroy();
   }
 
-  private removeActiveLink(): void {
-    this.links.forEach((el) => {
-      el.classList.remove('active-nav');
-    });
-  }
-
   private createLinks(): HTMLElement[] {
     return Object.entries(ROUTES).map(([name, route]) => {
       const link = new BaseComponent('a', ['nav-link'], { id: route, href: route }, name === 'Login' ? 'Logout' : name);
@@ -75,7 +70,7 @@ export default class App {
         event.preventDefault();
         this.router.push(route, store.user.hasUser());
 
-        this.removeActiveLink();
+        store.game.removeActiveLink();
         link.setClasses(['active-nav']);
 
         const el = link.getElement();

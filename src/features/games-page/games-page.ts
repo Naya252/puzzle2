@@ -17,6 +17,8 @@ class GamesPage extends BaseComponent {
 
     this.cards = new Cards(() => {
       pushRouter(ROUTES.Game, store.user.hasUser());
+      store.game.removeActiveLink();
+      store.game.addActiveLink(ROUTES.Game);
     });
     this.levels = new Levels((lvl: NumLevel) => {
       this.cards.drawCards(lvl);

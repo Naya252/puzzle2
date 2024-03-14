@@ -3,6 +3,7 @@ import BaseButton from '@/components/base-button/base-button';
 import store from '@/store/store';
 import { type Round } from '@/types/types';
 import { IMG_URL } from '@/shared/constants';
+import { isNumLevel } from '@/utils/common-validator';
 
 export default class Cards extends BaseComponent {
   private readonly cb: VoidFunction;
@@ -12,13 +13,30 @@ export default class Cards extends BaseComponent {
     this.cb = callback;
   }
 
+  public addHandler(el: Round, card: BaseComponent): void {
+    card.addListener('click', () => {
+      store.game.setActiveGame(el);
+      const { id } = el.levelData;
+      const activeLvl = id.split('_');
+
+      const Lvlid = Number(activeLvl[0]) - 1;
+      const roundid = Number(activeLvl[1]) - 1;
+      if (isNumLevel(Lvlid)) {
+        store.game.setActiveLevel(Lvlid);
+        store.game.setActiveRound(roundid);
+        store.game.setActiveSentence(0);
+
+        this.cb();
+      }
+    });
+  }
+
   public drawCards(activeLevel = 1): void {
     const children: BaseComponent[] = [];
     const data = store.game.getLevelData(activeLevel);
     if (data === null) {
       throw new Error('null');
     }
-
     if ('rounds' in data) {
       const { rounds } = data;
       if (rounds instanceof Array) {
@@ -33,11 +51,7 @@ export default class Cards extends BaseComponent {
           const name = new BaseComponent('p', ['name-img'], {}, el.levelData.name);
           const back = new BaseComponent('div', ['dark-layer']);
 
-          card.addListener('click', () => {
-            store.game.setActiveGame(el);
-            this.cb();
-          });
-
+          this.addHandler(el, card);
           card.append(back, name);
 
           col.append(card);
