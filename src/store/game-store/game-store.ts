@@ -1,4 +1,4 @@
-import { type RoundsData, type Round, type NumLevel, type NumSentence } from '@/types/types';
+import { type RoundsData, type Round, type NumLevel, type NumSentence, type UserSettingsType } from '@/types/types';
 
 export default class Game {
   private activeLevel: NumLevel;
@@ -8,6 +8,10 @@ export default class Game {
   private activeGame: Round | null;
   private activeRound: number;
   private links: HTMLElement[];
+
+  private isShowTranslate: boolean;
+  private isShowAudio: boolean;
+  private isShowImage: boolean;
 
   constructor(activeLevel: NumLevel = 0, activeRound = 0, activeSentence: NumSentence = 0) {
     this.activeLevel = activeLevel;
@@ -20,6 +24,10 @@ export default class Game {
     this.activeGame = null;
 
     this.links = [];
+
+    this.isShowTranslate = true;
+    this.isShowAudio = true;
+    this.isShowImage = true;
   }
 
   public getActiveLevel(): NumLevel {
@@ -108,5 +116,37 @@ export default class Game {
         el.classList.add('active-nav');
       }
     });
+  }
+
+  public getIsShowTranslate(): boolean {
+    return this.isShowTranslate;
+  }
+
+  public getIsShowAudio(): boolean {
+    return this.isShowAudio;
+  }
+
+  public getIsShowImage(): boolean {
+    return this.isShowImage;
+  }
+
+  public setIsShowTranslate(isShow: boolean): void {
+    this.isShowTranslate = isShow;
+  }
+
+  public setIsShowAudio(isShow: boolean): void {
+    this.isShowAudio = isShow;
+  }
+
+  public setIsShowImage(isShow: boolean): void {
+    this.isShowImage = isShow;
+  }
+
+  public getHintSettings(): UserSettingsType {
+    return {
+      isShowTranslate: this.isShowTranslate,
+      isShowAudio: this.isShowAudio,
+      isShowImage: this.isShowImage,
+    };
   }
 }

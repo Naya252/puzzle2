@@ -8,7 +8,9 @@ import AppRouter from '@/router/router';
 import { ROUTES } from '@/router/pathes';
 
 import store from '@/store/store';
-import { getUser, removeUser } from '@/repository/login-repository';
+import { USER_EMPTY, USER_SETTINGS_EMPTY } from '@/shared/constants';
+import { getUser, removeUser, getUserSettings, removeUserSettings } from '@/repository/login-repository';
+import { changeHintSettings } from '@/features/game-page/conponents/hints/services/hint-service';
 import { getLevel, initDefaultGame } from './features/game-page/services/game-service';
 
 export default class App {
@@ -40,6 +42,9 @@ export default class App {
 
     const user = getUser();
     store.user.setUser(user);
+
+    const hintsSettings = getUserSettings();
+    changeHintSettings(hintsSettings);
 
     const lvl = store.game.getActiveLevel();
     getLevel(lvl)
@@ -77,6 +82,10 @@ export default class App {
 
         if (el.id === 'login') {
           removeUser();
+          store.user.setUser(USER_EMPTY);
+          removeUserSettings();
+          changeHintSettings(USER_SETTINGS_EMPTY);
+
           this.router.logout();
         }
       });

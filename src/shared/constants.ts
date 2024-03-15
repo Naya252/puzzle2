@@ -2,3 +2,6 @@ export const BASE_DATA_URL = `https://raw.githubusercontent.com/rolling-scopes-s
 
 export const DATA_URL = `${BASE_DATA_URL}data/wordCollectionLevel`;
 export const IMG_URL = `${BASE_DATA_URL}images/`;
+
+export const USER_EMPTY = { name: '', surname: '' };
+export const USER_SETTINGS_EMPTY = { isShowTranslate: true, isShowAudio: true, isShowImage: true };

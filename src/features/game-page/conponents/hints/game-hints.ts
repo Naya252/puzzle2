@@ -10,7 +10,8 @@ import VolumeOff from '@/assets/icons/volume-off.svg';
 import Image from '@/assets/icons/image-outline.svg';
 import ImageOff from '@/assets/icons/image-off-outline.svg';
 
-import toggleHint from '@/features/game-page/conponents/hints/services/hint-service';
+import { toggleHint, setHintSettings } from '@/features/game-page/conponents/hints/services/hint-service';
+import store from '@/store/store';
 import HintBtn from './hint';
 
 export default class GameHints extends BaseComponent {
@@ -24,16 +25,16 @@ export default class GameHints extends BaseComponent {
   private audio: HTMLAudioElement;
   private puzzles: ChildNode[];
 
-  constructor(audioUrl: string, isShowTranslate = true, isShowAudio = true, isShowImage = true) {
+  constructor(audioUrl: string) {
     super('div', ['head'], {});
     this.puzzles = [];
 
     this.hintsSettingsContainer = new BaseComponent('div', ['hints']);
-    this.translateSettingBtn = this.initTranslateHint(isShowTranslate);
-    this.audioSettingBtn = this.initAudioHint(isShowAudio);
-    this.imgSettingBtn = this.initImgHint(isShowImage);
+    this.translateSettingBtn = this.initTranslateHint(store.game.getIsShowTranslate());
+    this.audioSettingBtn = this.initAudioHint(store.game.getIsShowAudio());
+    this.imgSettingBtn = this.initImgHint(store.game.getIsShowImage());
 
-    this.translateHint = new BaseComponent('p', ['text'], {}, 'text');
+    this.translateHint = new BaseComponent('p', ['text', 'invisible'], {}, 'text');
     this.audioHint = new BaseButton('button', '', ['audio', 'icon-btn']);
     const audioHintIcon = new BaseComponent('img', ['icon'], { alt: '', src: Play });
     this.audioHint.append(audioHintIcon);
@@ -52,6 +53,8 @@ export default class GameHints extends BaseComponent {
     return new HintBtn(
       (isShow) => {
         toggleHint(this.translateHint, isShow);
+        store.game.setIsShowTranslate(isShow);
+        setHintSettings();
       },
       Eye,
       EyeOff,
@@ -63,6 +66,8 @@ export default class GameHints extends BaseComponent {
     return new HintBtn(
       (isShow) => {
         toggleHint(this.audioHint, isShow);
+        store.game.setIsShowAudio(isShow);
+        setHintSettings();
       },
       Volume,
       VolumeOff,
@@ -74,6 +79,8 @@ export default class GameHints extends BaseComponent {
     return new HintBtn(
       (isShow) => {
         this.changeVisibleImages(isShow);
+        store.game.setIsShowImage(isShow);
+        setHintSettings();
       },
       Image,
       ImageOff,
@@ -102,11 +109,13 @@ export default class GameHints extends BaseComponent {
   }
 
   public changeTranslateHint(text: string): void {
+    toggleHint(this.translateHint, store.game.getIsShowTranslate());
     this.translateHint.setTextContent(text);
   }
 
   public changeAudioHint(url: string): void {
     this.audio = new Audio(url);
+    toggleHint(this.audioHint, store.game.getIsShowAudio());
     this.audio.addEventListener('ended', () => {
       this.removeActive();
     });

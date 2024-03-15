@@ -66,7 +66,9 @@ export default class LoginForm extends BaseComponent {
     e.stopPropagation();
 
     if (isValid(e)) {
-      saveUser({ name: this.nameInput.getValue(), surname: this.surnameInput.getValue() });
+      const userData = { name: this.nameInput.getValue(), surname: this.surnameInput.getValue() };
+      saveUser(userData);
+      store.user.setUser(userData);
       this.pushRouter(ROUTES.Start, store.user.hasUser());
     }
 

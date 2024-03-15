@@ -34,6 +34,12 @@ export type UserType = {
   surname: string;
 };
 
+export type UserSettingsType = {
+  isShowTranslate: boolean;
+  isShowAudio: boolean;
+  isShowImage: boolean;
+};
+
 export type GameData = {
   id: string;
   word: string;
