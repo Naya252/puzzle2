@@ -1,0 +1,48 @@
+@import '../../../../styles/variables';
+
+.buttons-container {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+}
+.check-btn,
+.autocomplete-btn {
+  align-self: center;
+  max-width: 200px;
+}
+
+.check-btn.continue {
+  &:after {
+    content: '➞';
+    font-size: 28px;
+    position: absolute;
+    right: 32px;
+    top: calc(50% - 20px);
+    transition: transform 0.5s linear;
+  }
+
+  &.moveArrow {
+    &:after {
+      transform: translateX(16px);
+    }
+  }
+}
+
+.btn-pz-primary.outlined.autocomplete-btn {
+  background-color: rgba($error-bright-color, 0.3);
+  border: 2px solid rgba($dark-color, 0.5);
+  color: $dark-color;
+
+  &:hover,
+  &:focus {
+    background-color: rgba($error-bright-color, 0.8);
+    filter: brightness(1.2);
+    color: $light-color;
+  }
+
+  &:active {
+    background-color: rgba($error-bright-color, 0.9) !important;
+    filter: brightness(1);
+    color: $light-color;
+  }
+}

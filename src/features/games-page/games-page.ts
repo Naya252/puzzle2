@@ -1,6 +1,6 @@
 import BaseComponent from '@/components/base-component';
-import Levels from '@/features/games-page/levels';
-import Cards from '@/features/games-page/cards';
+import Levels from '@/features/games-page/components/levels';
+import Cards from '@/features/games-page/components/cards';
 import '@/features/games-page/games-page.scss';
 
 import { ROUTES } from '@/router/pathes';

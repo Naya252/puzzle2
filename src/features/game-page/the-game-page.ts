@@ -1,18 +1,10 @@
-import '@/features/games-page/game-page.scss';
+import '@/features/game-page/game-page.scss';
 import BaseComponent from '@/components/base-component';
 import store from '@/store/store';
 import { type Round, type Word, type GameData, type GameFullData, type NumSentence } from '@/types/types';
 import { IMG_URL } from '@/shared/constants';
 import { isNull, isUndefined, isHTMLElement, isNumSentence, isNumLevel } from '@/utils/common-validator';
-import {
-  createGameInfo,
-  changeTitle,
-  createHints,
-  createText,
-  creatGameField,
-  changeGamefield,
-  createGameWrapper,
-} from '@/features/games-page/services/create-html-service';
+
 import {
   dragStart,
   dragEnter,
@@ -24,9 +16,20 @@ import {
   removeAbsolute,
   changeWidth,
   changeColParent,
-} from '@/features/games-page/services/drag-and-drop-service';
-import { getStyles, changePuzzleHead, createData, getLevel } from '@/features/games-page/services/game-service';
-import BaseButton from '@/components/base-button/base-button';
+} from '@/features/game-page/services/drag-and-drop-service';
+import {
+  getStyles,
+  changePuzzleHead,
+  createData,
+  getLevel,
+  changeDisabled,
+} from '@/features/game-page/services/game-service';
+
+import GameTitle from './conponents/game-title';
+import GameHints from './conponents/hints/game-hints';
+import GameField from './conponents/game-field';
+import WordsContainer from './conponents/words-container';
+import GameButtons from './conponents/buttons/game-buttons';
 
 const splitText = (text: string, operator: string): string[] => {
   const data = text.split(operator);
@@ -34,23 +37,21 @@ const splitText = (text: string, operator: string): string[] => {
 };
 
 class GamePage extends BaseComponent {
-  private readonly gameInfo: BaseComponent;
-  private readonly text: BaseComponent;
-  private readonly hints: BaseComponent;
+  private readonly gameTitle: GameTitle;
+  private readonly gameHints: GameHints;
+  private readonly gameField: GameField;
+  private readonly wordsContainer: WordsContainer;
   private readonly gameWrapper: BaseComponent;
-  private readonly gameField: BaseComponent;
-  private curRow: ChildNode;
-  private readonly arrWords: BaseComponent;
-  private readonly wordsContainer: BaseComponent;
-  private containers: HTMLElement[];
+  private readonly gameButtons: GameButtons;
+
   private currentPoint: NumSentence;
   private data: Round;
-  private readonly checkBtn: BaseButton;
-  private readonly autoCompleteBtn: BaseButton;
+  private gameData: Record<number, GameFullData>;
 
   private puzzle: HTMLElement | null;
   private puzzleParent: ParentNode | null;
-  private gameData: Record<number, GameFullData>;
+  private curRow: ChildNode;
+  private readonly arrWords: BaseComponent;
 
   constructor(pushRouter: (route: string, isAuth: boolean) => void) {
     super('div', ['game'], {});
@@ -61,34 +62,29 @@ class GamePage extends BaseComponent {
     this.currentPoint = store.game.getActiveSentence();
     this.arrWords = new BaseComponent('div');
 
-    this.gameInfo = createGameInfo(this.data);
-    this.hints = createHints();
-    this.text = createText();
-    const headGame = new BaseComponent('div', ['head']);
-    headGame.append(this.text, this.hints);
-
-    this.gameWrapper = createGameWrapper();
+    this.gameTitle = new GameTitle();
+    this.gameTitle.changeLevel();
+    this.gameTitle.changeName(this.data.levelData.name);
+    this.gameHints = new GameHints();
+    this.gameWrapper = new BaseComponent('div', ['game-wrapper']);
+    this.wordsContainer = new WordsContainer();
+    this.gameField = new GameField();
     const url = this.getUrl();
-    this.gameField = creatGameField(url);
-
-    this.curRow = this.selectRow(0);
-    this.wordsContainer = new BaseComponent('div', ['words-container']);
-    this.containers = [];
-
+    this.gameField.changeImage(url);
     this.gameWrapper.append(this.gameField, this.wordsContainer);
+    this.gameButtons = new GameButtons();
+    this.append(this.gameTitle, this.gameHints, this.gameWrapper, this.gameButtons);
 
-    const btnContainer = new BaseComponent('div', ['buttons-container']);
-    this.checkBtn = new BaseButton('button', 'Check', ['check-btn', 'outlined'], { disabled: 'true' });
     this.checkListener();
-    this.autoCompleteBtn = new BaseButton('button', `I don't know`, ['autocomplete-btn', 'outlined']);
     this.autocompleteListener();
-    btnContainer.append(this.autoCompleteBtn, this.checkBtn);
 
-    this.append(this.gameInfo, headGame, this.gameWrapper, btnContainer);
+    this.curRow = this.gameField.selectRow(0);
+
     const resizeObserver = new ResizeObserver(() => {
       this.changeWidthImg(this.currentPoint).catch(() => {});
     });
     resizeObserver.observe(this.gameField.getElement());
+
     this.initFirstGame().catch(() => {});
   }
 
@@ -97,8 +93,14 @@ class GamePage extends BaseComponent {
     return url;
   }
 
+  private changeGameField(): void {
+    const url = this.getUrl();
+    this.gameField.clean();
+    this.gameField.changeImage(url);
+  }
+
   private checkListener(): void {
-    this.checkBtn.addListener('click', (e) => {
+    this.gameButtons.checkBtn.addListener('click', (e) => {
       if (!isNull(e.target) && isHTMLElement(e.target)) {
         if (e.target.textContent === 'Check') {
           const isCorrect = this.isCorrectSentense();
@@ -111,6 +113,49 @@ class GamePage extends BaseComponent {
         }
       }
     });
+  }
+
+  private autocompleteListener(): void {
+    this.gameButtons.autocompleteBtn.addListener('click', () => {
+      this.completeSentence(this.currentPoint);
+      this.isCorrectSentense();
+      this.changeWinData(false);
+    });
+  }
+
+  private async initFirstGame(i = 0): Promise<void> {
+    if (i < this.currentPoint) {
+      if (isNumSentence(i)) {
+        await this.createPuzzles(this.currentPoint);
+        this.completeSentence(i);
+        this.addBlock(i);
+      }
+      await this.initFirstGame(i + 1);
+    } else {
+      this.startNewGame().catch(() => {});
+    }
+  }
+
+  private async startNewGame(): Promise<void> {
+    await this.createPuzzles(this.currentPoint);
+    this.changeText();
+  }
+
+  private async createPuzzles(i = this.currentPoint): Promise<void> {
+    this.curRow = this.gameField.selectRow(i);
+    await this.fillData(i);
+    this.createHtmlWords(i);
+    await this.changeWidthImg(i);
+    this.changeToRandom(this.arrWords);
+  }
+
+  private async fillData(i: NumSentence): Promise<void> {
+    const lvlId = this.data.levelData.id;
+    const { data, wordsFullData } = this.changeWords(lvlId, i);
+
+    await createData(data.textExample, wordsFullData, this.gameField);
+    const sentense: GameFullData = { levelData: data, wordsFullData };
+    this.gameData[i] = sentense;
   }
 
   private addBlock(i: NumSentence): void {
@@ -133,33 +178,11 @@ class GamePage extends BaseComponent {
     }
   }
 
-  private async initFirstGame(i = 0): Promise<void> {
-    if (i < this.currentPoint) {
-      if (isNumSentence(i)) {
-        this.curRow = this.selectRow(i);
-        await this.fillData(i);
-
-        this.createHtmlWords(i);
-        await this.changeWidthImg(i);
-        this.changeToRandom(this.arrWords);
-        this.completeSentence(i);
-        this.addBlock(i);
-      }
-      await this.initFirstGame(i + 1);
-    } else {
-      this.startNewGame().catch(() => {});
-    }
-  }
-
   private changeToDefault(): void {
-    const autoCompleteBtn = this.autoCompleteBtn.getElement();
-    autoCompleteBtn.removeAttribute('disabled');
-
-    const checkBtn = this.checkBtn.getElement();
-    checkBtn.setAttribute('disabled', 'true');
-    checkBtn.textContent = 'Check';
-    checkBtn.classList.remove('continue');
-    checkBtn.classList.remove('moveArrow');
+    changeDisabled(this.gameButtons.autocompleteBtn, false);
+    changeDisabled(this.gameButtons.checkBtn, true);
+    this.gameButtons.checkBtn.setTextContent('Check');
+    this.gameButtons.checkBtn.removeClasses(['continue', 'moveArrow']);
 
     const arr = Array.from(this.curRow.childNodes);
     arr.forEach((el) => {
@@ -219,11 +242,12 @@ class GamePage extends BaseComponent {
             store.game.setActiveSentence(0);
             this.currentPoint = store.game.getActiveSentence();
             this.data = store.game.getActiveGame();
-            this.containers = [];
-            const url = this.getUrl();
-            changeGamefield(url, this.gameField);
+            this.changeGameField();
+
             this.startNewGame().catch(() => {});
-            changeTitle(this.gameInfo, this.data);
+
+            this.gameTitle.changeLevel();
+            this.gameTitle.changeName(this.data.levelData.name);
           }
         }
       })
@@ -238,11 +262,10 @@ class GamePage extends BaseComponent {
 
     store.game.setActiveSentence(0);
     this.currentPoint = store.game.getActiveSentence();
-    this.containers = [];
-    const url = this.getUrl();
-    changeGamefield(url, this.gameField);
+    this.changeGameField();
     this.startNewGame().catch(() => {});
-    changeTitle(this.gameInfo, this.data);
+
+    this.gameTitle.changeName(this.data.levelData.name);
   }
 
   private changeCurrentPoint(): void {
@@ -255,35 +278,16 @@ class GamePage extends BaseComponent {
     }
   }
 
-  private async startNewGame(): Promise<void> {
-    this.curRow = this.selectRow(this.currentPoint);
-    await this.fillData(this.currentPoint);
-
-    this.createHtmlWords(this.currentPoint);
-    await this.changeWidthImg(this.currentPoint);
-    this.changeToRandom(this.arrWords);
-
-    this.changeText();
-  }
-
   private continueGame(): void {
     this.addBlock(this.currentPoint);
-    this.autoCompleteBtn.setAttributes({ disabled: 'true' });
-    this.checkBtn.setClasses(['continue']);
-    setTimeout(() => {
-      this.checkBtn.setClasses(['moveArrow']);
-    }, 300);
-    const checkBtn = this.checkBtn.getElement();
-    checkBtn.removeAttribute('disabled');
-    checkBtn.textContent = 'Continue';
-  }
 
-  private autocompleteListener(): void {
-    this.autoCompleteBtn.addListener('click', () => {
-      this.completeSentence(this.currentPoint);
-      this.isCorrectSentense();
-      this.changeWinData(false);
-    });
+    changeDisabled(this.gameButtons.autocompleteBtn, true);
+    changeDisabled(this.gameButtons.checkBtn, false);
+    this.gameButtons.checkBtn.setClasses(['continue']);
+    this.gameButtons.checkBtn.setTextContent('Continue');
+    setTimeout(() => {
+      this.gameButtons.checkBtn.setClasses(['moveArrow']);
+    }, 300);
   }
 
   private completeSentence(idx: NumSentence): void {
@@ -309,12 +313,10 @@ class GamePage extends BaseComponent {
       return !isNull(img);
     });
 
-    const btn = this.checkBtn.getElement();
-
     if (isFull) {
-      btn.removeAttribute('disabled');
+      changeDisabled(this.gameButtons.checkBtn, false);
     } else {
-      btn.setAttribute('disabled', 'true');
+      changeDisabled(this.gameButtons.checkBtn, true);
     }
   }
 
@@ -350,15 +352,6 @@ class GamePage extends BaseComponent {
     return isCorrect;
   }
 
-  private selectRow(i: NumSentence): ChildNode {
-    const game = this.gameField.getElement();
-    const el = game.childNodes[i];
-    if (isUndefined(el)) {
-      throw new Error('is undefined');
-    }
-    return el;
-  }
-
   private selectSentence(i: NumSentence): Word {
     const sentense = this.data.words[i];
     if (sentense === undefined) {
@@ -372,7 +365,7 @@ class GamePage extends BaseComponent {
     const data = this.gameData[this.currentPoint];
     if (!isUndefined(data) && !isNull(data)) {
       const text = data.levelData.textExampleTranslate;
-      this.text.setTextContent(text);
+      this.gameHints.changeTranslateText(text);
     }
   }
 
@@ -422,7 +415,7 @@ class GamePage extends BaseComponent {
 
   private createHtmlWords(idx: NumSentence): void {
     const data = this.gameData[idx];
-    this.wordsContainer.setHTML('');
+    this.wordsContainer.clean();
     this.arrWords.setHTML('');
 
     if (!isNull(data) && !isUndefined(data)) {
@@ -442,7 +435,6 @@ class GamePage extends BaseComponent {
         const colContainer = new BaseComponent('div', ['col', 'col-container'], { id: `container-${i}` });
         this.curRow.appendChild(colResult.getElement());
 
-        this.containers.push(colContainer.getElement());
         this.wordsContainer.append(colContainer);
 
         const wordData = words[i];
@@ -594,15 +586,6 @@ class GamePage extends BaseComponent {
       node: null,
     }));
     return { data, wordsFullData };
-  }
-
-  private async fillData(i: NumSentence): Promise<void> {
-    const lvlId = this.data.levelData.id;
-    const { data, wordsFullData } = this.changeWords(lvlId, i);
-
-    await createData(data.textExample, wordsFullData, this.gameField);
-    const sentense: GameFullData = { levelData: data, wordsFullData };
-    this.gameData[i] = sentense;
   }
 }
 

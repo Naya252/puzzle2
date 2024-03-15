@@ -21,6 +21,14 @@ export default class BaseComponent {
     }
   }
 
+  public removeClasses(classNames: string[]): void {
+    if (classNames.length > 0) {
+      classNames.forEach((className) => {
+        this.element.classList.remove(className);
+      });
+    }
+  }
+
   public setTextContent(text: string): void {
     if (typeof text === 'string' && text !== '') {
       this.element.textContent = text;

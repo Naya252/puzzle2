@@ -3,6 +3,7 @@ import { type NumLevel, type GameData, type NumSentence } from '@/types/types';
 import store from '@/store/store';
 import { isNull, isUndefined } from '@/utils/common-validator';
 import type BaseComponent from '@/components/base-component';
+import type BaseButton from '@/components/base-button/base-button';
 
 export async function getLevel(lvl: NumLevel): Promise<boolean> {
   const levelData = await fetchLevelData(lvl);
@@ -113,5 +114,14 @@ export async function createData(
   const changedMax = data.find((el) => el.widthPercents === max);
   if (!isUndefined(changedMax)) {
     changedMax.widthPercents = newMax;
+  }
+}
+
+export function changeDisabled(btn: BaseButton, toDisabled: boolean): void {
+  const button = btn.getElement();
+  if (toDisabled) {
+    button.setAttribute('disabled', 'true');
+  } else {
+    button.removeAttribute('disabled');
   }
 }

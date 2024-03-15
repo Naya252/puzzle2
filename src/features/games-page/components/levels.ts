@@ -2,7 +2,7 @@ import BaseComponent from '@/components/base-component';
 import BaseButton from '@/components/base-button/base-button';
 import { type NumLevel } from '@/types/types';
 import store from '@/store/store';
-import { getLevel } from './services/game-service';
+import { getLevel } from '../../game-page/services/game-service';
 
 export default class Levels extends BaseComponent {
   private activeLevel: NumLevel;

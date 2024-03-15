@@ -41,7 +41,7 @@ export default class AppRouter extends Router {
         {
           name: ROUTES.Game,
           component: async () => {
-            const { default: createPage } = await import('@/features/games-page/the-game-page');
+            const { default: createPage } = await import('@/features/game-page/the-game-page');
             return createPage((route: string, isAuth: boolean) => {
               this.push(route, isAuth);
             });

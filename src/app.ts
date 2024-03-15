@@ -9,7 +9,7 @@ import { ROUTES } from '@/router/pathes';
 
 import store from '@/store/store';
 import { getUser, removeUser } from '@/repository/login-repository';
-import { getLevel, initDefaultGame } from './features/games-page/services/game-service';
+import { getLevel, initDefaultGame } from './features/game-page/services/game-service';
 
 export default class App {
   private readonly appContainer: BaseComponent;
