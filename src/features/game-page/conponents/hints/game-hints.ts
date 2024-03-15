@@ -4,37 +4,55 @@ import BaseButton from '@/components/base-button/base-button';
 import Eye from '@/assets/icons/eye-outline.svg';
 import EyeOff from '@/assets/icons/eye-off-outline.svg';
 import Play from '@/assets/icons/play-circle-outline.svg';
+import Volume from '@/assets/icons/volume-high.svg';
+import VolumeOff from '@/assets/icons/volume-off.svg';
+
+const toggleIcon = (item: BaseComponent, isTrue: boolean, trueIcon: string, falseIcon: string): void => {
+  item.setAttributes({ src: isTrue ? trueIcon : falseIcon });
+};
+
+const toggleHint = (item: BaseComponent, isShow: boolean): void => {
+  if (isShow) {
+    item.removeClasses(['invisible']);
+  } else {
+    item.setClasses(['invisible']);
+  }
+};
 
 export default class GameHints extends BaseComponent {
   private readonly hintsContainer: BaseComponent;
 
-  private readonly translateText: BaseComponent;
-  private readonly translateBtn: BaseButton;
-  private readonly translateIcon: BaseComponent;
+  private readonly translateHint: BaseComponent;
+  private readonly translateSettingBtn: BaseButton;
+  private readonly translateSettingIcon: BaseComponent;
 
-  private readonly play: BaseButton;
+  private readonly audioHint: BaseButton;
+  private readonly audioSettingBtn: BaseButton;
+  private readonly audioSettingIcon: BaseComponent;
 
   private isShowTranslate: boolean;
+  private isShowAudio: boolean;
   private readonly audio: HTMLAudioElement;
 
   constructor(audioUrl: string) {
     super('div', ['head'], {});
     this.isShowTranslate = true;
+    this.isShowAudio = true;
 
     this.hintsContainer = new BaseComponent('div', ['hints']);
 
-    this.translateText = new BaseComponent('p', ['text'], {}, 'text');
-    this.translateIcon = new BaseComponent('img', ['icon'], { alt: '', src: Eye });
-    this.translateBtn = new BaseButton('button', '', ['translate-hint', 'icon-btn']);
-    this.translateBtn.append(this.translateIcon);
-    this.translateBtn.addListener('click', () => {
+    this.translateHint = new BaseComponent('p', ['text'], {}, 'text');
+    this.translateSettingIcon = new BaseComponent('img', ['icon'], { alt: '', src: Eye });
+    this.translateSettingBtn = new BaseButton('button', '', ['translate-hint', 'icon-btn']);
+    this.translateSettingBtn.append(this.translateSettingIcon);
+    this.translateSettingBtn.addListener('click', () => {
       this.toggleTranslate();
     });
 
-    const playIcon = new BaseComponent('img', ['icon'], { alt: '', src: Play });
-    this.play = new BaseButton('button', '', ['audio', 'icon-btn']);
-    this.play.append(playIcon);
-    this.play.addListener('click', () => {
+    const audioHintIcon = new BaseComponent('img', ['icon'], { alt: '', src: Play });
+    this.audioHint = new BaseButton('button', '', ['audio', 'icon-btn']);
+    this.audioHint.append(audioHintIcon);
+    this.audioHint.addListener('click', () => {
       this.playAudio();
     });
     this.audio = new Audio(audioUrl);
@@ -42,43 +60,44 @@ export default class GameHints extends BaseComponent {
       this.removeActive();
     });
 
-    this.hintsContainer.append(this.translateBtn);
+    this.audioSettingIcon = new BaseComponent('img', ['icon'], { alt: '', src: Volume });
+    this.audioSettingBtn = new BaseButton('button', '', ['translate-hint', 'icon-btn']);
+    this.audioSettingBtn.append(this.audioSettingIcon);
+    this.audioSettingBtn.addListener('click', () => {
+      this.toggleAudio();
+    });
 
-    this.append(this.play, this.translateText, this.hintsContainer);
+    this.hintsContainer.append(this.translateSettingBtn, this.audioSettingBtn);
+
+    this.append(this.audioHint, this.translateHint, this.hintsContainer);
   }
 
   public changeTranslateText(text: string): void {
-    this.translateText.setTextContent(text);
+    this.translateHint.setTextContent(text);
   }
 
   public toggleTranslate(): void {
     this.isShowTranslate = !this.isShowTranslate;
-    this.changeTranslateICon(this.isShowTranslate);
-    this.toggleTranslateText(this.isShowTranslate);
+    toggleIcon(this.translateSettingIcon, this.isShowTranslate, Eye, EyeOff);
+    toggleHint(this.translateHint, this.isShowTranslate);
+  }
+
+  private toggleAudio(): void {
+    this.isShowAudio = !this.isShowAudio;
+    toggleIcon(this.audioSettingIcon, this.isShowAudio, Volume, VolumeOff);
+    toggleHint(this.audioHint, this.isShowAudio);
   }
 
   public playAudio(): void {
     this.audio
       .play()
       .then(() => {
-        this.play.setClasses(['animated']);
+        this.audioHint.setClasses(['animated']);
       })
       .catch(() => {});
   }
 
   public removeActive(): void {
-    this.play.removeClasses(['animated']);
-  }
-
-  public changeTranslateICon(isShowEye: boolean): void {
-    this.translateIcon.setAttributes({ src: isShowEye ? Eye : EyeOff });
-  }
-
-  public toggleTranslateText(isShowEye: boolean): void {
-    if (isShowEye) {
-      this.translateText.removeClasses(['invisible']);
-    } else {
-      this.translateText.setClasses(['invisible']);
-    }
+    this.audioHint.removeClasses(['animated']);
   }
 }
