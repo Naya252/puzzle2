@@ -2,7 +2,7 @@ import '@/features/game-page/game-page.scss';
 import BaseComponent from '@/components/base-component';
 import store from '@/store/store';
 import { type Round, type Word, type GameData, type GameFullData, type NumSentence } from '@/types/types';
-import { IMG_URL } from '@/shared/constants';
+import { IMG_URL, BASE_DATA_URL } from '@/shared/constants';
 import { isNull, isUndefined, isHTMLElement, isNumSentence, isNumLevel } from '@/utils/common-validator';
 
 import {
@@ -65,7 +65,7 @@ class GamePage extends BaseComponent {
     this.gameTitle = new GameTitle();
     this.gameTitle.changeLevel();
     this.gameTitle.changeName(this.data.levelData.name);
-    this.gameHints = new GameHints();
+    this.gameHints = new GameHints(this.getAudioUrl());
     this.gameWrapper = new BaseComponent('div', ['game-wrapper']);
     this.wordsContainer = new WordsContainer();
     this.gameField = new GameField();
@@ -90,6 +90,16 @@ class GamePage extends BaseComponent {
 
   private getUrl(): string {
     const url = `${IMG_URL}${this.data.levelData.cutSrc}`;
+    this.getAudioUrl();
+    return url;
+  }
+
+  private getAudioUrl(): string {
+    const audio = this.data.words[this.currentPoint];
+    let url = '';
+    if (!isUndefined(audio)) {
+      url = `${BASE_DATA_URL}${audio.audioExample}`;
+    }
     return url;
   }
 
