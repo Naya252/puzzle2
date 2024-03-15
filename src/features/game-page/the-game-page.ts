@@ -90,7 +90,6 @@ class GamePage extends BaseComponent {
 
   private getUrl(): string {
     const url = `${IMG_URL}${this.data.levelData.cutSrc}`;
-    this.getAudioUrl();
     return url;
   }
 
@@ -149,6 +148,7 @@ class GamePage extends BaseComponent {
   private async startNewGame(): Promise<void> {
     await this.createPuzzles(this.currentPoint);
     this.changeText();
+    this.gameHints.changeAudioHint(this.getAudioUrl());
   }
 
   private async createPuzzles(i = this.currentPoint): Promise<void> {
@@ -156,6 +156,7 @@ class GamePage extends BaseComponent {
     await this.fillData(i);
     this.createHtmlWords(i);
     await this.changeWidthImg(i);
+    this.gameHints.changePuzzles(this.arrWords);
     this.changeToRandom(this.arrWords);
   }
 
@@ -193,6 +194,7 @@ class GamePage extends BaseComponent {
     changeDisabled(this.gameButtons.checkBtn, true);
     this.gameButtons.checkBtn.setTextContent('Check');
     this.gameButtons.checkBtn.removeClasses(['continue', 'moveArrow']);
+    this.gameHints.showImages();
 
     const arr = Array.from(this.curRow.childNodes);
     arr.forEach((el) => {
@@ -375,7 +377,7 @@ class GamePage extends BaseComponent {
     const data = this.gameData[this.currentPoint];
     if (!isUndefined(data) && !isNull(data)) {
       const text = data.levelData.textExampleTranslate;
-      this.gameHints.changeTranslateText(text);
+      this.gameHints.changeTranslateHint(text);
     }
   }
 
