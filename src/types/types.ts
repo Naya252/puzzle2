@@ -48,4 +48,11 @@ export type GameData = {
   node: null | BaseComponent;
 };
 
+export type LastGameData = {
+  level: NumLevel;
+  round: number;
+  sentence: NumSentence;
+  winData: boolean[];
+};
+
 export type GameFullData = { levelData: Word; wordsFullData: GameData[] };

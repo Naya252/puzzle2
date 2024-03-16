@@ -48,6 +48,7 @@
     border: 2px solid #464849;
     background-color: rgba($dark-color, 0.9);
     transition: all 0.3s ease;
+    background-blend-mode: luminosity;
 
     .dark-layer {
       position: absolute;
@@ -81,12 +82,29 @@
     }
 
     &:active,
-    &.active {
+    &.active-game {
       filter: brightness(1);
+      border-color: $accent-color;
+
+      .dark-layer {
+        background-color: rgba($light-color, 0.45);
+      }
+
+      .name-img {
+        color: #000;
+        filter: brightness(0.2);
+        font-weight: 600;
+      }
+
+      &:active {
+        background-color: rgba($dark-color, 0.9) !important;
+      }
     }
   }
 
   .completed {
+    background-blend-mode: normal;
+
     &::before {
       content: url('../../assets/icons/checkbox-marked.svg');
       width: 1.2rem;

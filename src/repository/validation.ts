@@ -1,4 +1,4 @@
-import type { RoundsData, Round, LevelData, Word, UserType, UserSettingsType } from '@/types/types';
+import type { RoundsData, Round, LevelData, Word, UserType, UserSettingsType, LastGameData } from '@/types/types';
 
 const isLevelData = (value: unknown): value is LevelData => {
   const fields = ['id', 'name', 'imageSrc', 'cutSrc', 'author', 'year'];
@@ -112,6 +112,25 @@ export const isValidCompletedRounds = (data: unknown): data is string[] => {
 
 export const isValidCompletedLevels = (data: unknown): data is number[] => {
   if (typeof data === 'object' && data !== null && data instanceof Array && typeof data[0] === 'number') {
+    return true;
+  }
+
+  return false;
+};
+
+export const isValidLastGame = (data: unknown): data is LastGameData => {
+  if (
+    typeof data === 'object' &&
+    data !== null &&
+    'level' in data &&
+    typeof data.level === 'number' &&
+    'round' in data &&
+    typeof data.round === 'number' &&
+    'sentence' in data &&
+    typeof data.sentence === 'number' &&
+    'winData' in data &&
+    data.winData instanceof Array
+  ) {
     return true;
   }
 

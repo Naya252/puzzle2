@@ -1,6 +1,12 @@
-import { type UserType, type UserSettingsType } from '@/types/types';
-import { USER_EMPTY, USER_SETTINGS_EMPTY } from '@/shared/constants';
-import { isValidUser, isValidUserSettings, isValidCompletedRounds, isValidCompletedLevels } from './validation';
+import { type UserType, type UserSettingsType, type LastGameData } from '@/types/types';
+import { USER_EMPTY, USER_SETTINGS_EMPTY, LAST_GAME_DATA_EMPTY } from '@/shared/constants';
+import {
+  isValidUser,
+  isValidUserSettings,
+  isValidCompletedRounds,
+  isValidCompletedLevels,
+  isValidLastGame,
+} from './validation';
 
 export const getUser = (): UserType => {
   const data = localStorage.getItem('User');
@@ -85,4 +91,28 @@ export const setCompletedLevels = (allCompletedLevels: number[]): void => {
 
 export const removeCompletedLevels = (): void => {
   localStorage.removeItem('CompletedLevels');
+};
+
+export const getLastGame = (): LastGameData => {
+  const data = localStorage.getItem('LastGame');
+  if (data === null) {
+    if (!isValidLastGame(LAST_GAME_DATA_EMPTY)) {
+      throw new Error('Invalid data format');
+    }
+    return LAST_GAME_DATA_EMPTY;
+  }
+
+  const lastGameData: unknown = JSON.parse(data);
+  if (!isValidLastGame(lastGameData)) {
+    throw new Error('Invalid data format');
+  }
+  return lastGameData;
+};
+
+export const setLastGame = (lastGameData: LastGameData): void => {
+  localStorage.setItem('LastGame', JSON.stringify(lastGameData));
+};
+
+export const removeLastGame = (): void => {
+  localStorage.removeItem('LastGame');
 };

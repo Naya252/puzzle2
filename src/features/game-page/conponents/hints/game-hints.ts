@@ -108,6 +108,14 @@ export default class GameHints extends BaseComponent {
     });
   }
 
+  public showTraslate(): void {
+    toggleHint(this.translateHint, true);
+  }
+
+  public hideTranslate(): void {
+    toggleHint(this.translateHint, false);
+  }
+
   public changeTranslateHint(text: string): void {
     toggleHint(this.translateHint, store.game.getIsShowTranslate());
     this.translateHint.setTextContent(text);
@@ -119,6 +127,14 @@ export default class GameHints extends BaseComponent {
     this.audio.addEventListener('ended', () => {
       this.removeActive();
     });
+  }
+
+  public showAudio(): void {
+    toggleHint(this.audioHint, true);
+  }
+
+  public hideAudio(): void {
+    toggleHint(this.audioHint, false);
   }
 
   public playAudio(): void {

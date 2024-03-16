@@ -1,4 +1,11 @@
-import { type RoundsData, type Round, type NumLevel, type NumSentence, type UserSettingsType } from '@/types/types';
+import {
+  type RoundsData,
+  type Round,
+  type NumLevel,
+  type NumSentence,
+  type UserSettingsType,
+  type LastGameData,
+} from '@/types/types';
 
 export default class Game {
   private activeLevel: NumLevel;
@@ -14,6 +21,7 @@ export default class Game {
   private isShowImage: boolean;
   private completedRounds: string[];
   private completedLevels: number[];
+  private winData: boolean[];
 
   constructor(activeLevel: NumLevel = 0, activeRound = 0, activeSentence: NumSentence = 0) {
     this.activeLevel = activeLevel;
@@ -32,6 +40,7 @@ export default class Game {
     this.isShowImage = true;
     this.completedRounds = [];
     this.completedLevels = [];
+    this.winData = [];
   }
 
   public getActiveLevel(): NumLevel {
@@ -176,5 +185,27 @@ export default class Game {
 
   public changeCompletedLevels(levels: number[]): void {
     this.completedLevels = levels;
+  }
+
+  public getGameDataForSaveGame(): LastGameData {
+    const data = {
+      level: this.activeLevel,
+      round: this.activeRound,
+      sentence: this.activeSentence,
+      winData: this.winData,
+    };
+    return data;
+  }
+
+  public getWinData(): boolean[] {
+    return this.winData;
+  }
+
+  public setWinData(isWin: boolean): void {
+    this.winData.push(isWin);
+  }
+
+  public changeWinData(winData: boolean[]): void {
+    this.winData = winData;
   }
 }

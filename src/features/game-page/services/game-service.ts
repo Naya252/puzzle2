@@ -1,6 +1,6 @@
 import fetchLevelData from '@/repository/game-repository';
 import { getCompletedRounds, setCompletedLevels, setCompletedRounds } from '@/repository/user-repository';
-import { type NumLevel, type GameData, type NumSentence } from '@/types/types';
+import { type NumLevel, type GameData } from '@/types/types';
 import store from '@/store/store';
 import { isNull, isUndefined } from '@/utils/common-validator';
 import type BaseComponent from '@/components/base-component';
@@ -12,7 +12,7 @@ export async function getLevel(lvl: NumLevel): Promise<boolean> {
   return true;
 }
 
-export function initDefaultGame(lvl: NumLevel, curRound = 0, curSentence: NumSentence = 0): void {
+export function initDefaultGame(lvl: NumLevel, curRound = 0): void {
   const levelData = store.game.getLevelData(lvl);
   if (!isNull(levelData)) {
     const { rounds } = levelData;
@@ -21,7 +21,6 @@ export function initDefaultGame(lvl: NumLevel, curRound = 0, curSentence: NumSen
       const round = rounds[curRound];
       if (!isUndefined(round)) {
         store.game.setActiveGame(round);
-        store.game.setActiveSentence(curSentence);
       }
     }
   }

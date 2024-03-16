@@ -18,6 +18,8 @@ import {
   removeCompletedRounds,
   getCompletedLevels,
   removeCompletedLevels,
+  getLastGame,
+  removeLastGame,
 } from '@/repository/user-repository';
 import { changeHintSettings } from '@/features/game-page/conponents/hints/services/hint-service';
 import { getLevel, initDefaultGame } from './features/game-page/services/game-service';
@@ -61,10 +63,15 @@ export default class App {
     const completedLevels = getCompletedLevels();
     store.game.changeCompletedLevels(completedLevels);
 
-    const lvl = store.game.getActiveLevel();
-    getLevel(lvl)
+    const lastGame = getLastGame();
+    store.game.setActiveLevel(lastGame.level);
+    store.game.setActiveRound(lastGame.round);
+    store.game.setActiveSentence(lastGame.sentence);
+    store.game.changeWinData(lastGame.winData);
+
+    getLevel(lastGame.level)
       .then(() => {
-        initDefaultGame(lvl);
+        initDefaultGame(lastGame.level, lastGame.round);
         this.router.push('', store.user.hasUser());
 
         const active = this.links.find(
@@ -104,6 +111,11 @@ export default class App {
           store.game.changeCompletedRounds([]);
           removeCompletedLevels();
           store.game.changeCompletedLevels([]);
+          removeLastGame();
+          store.game.setActiveLevel(0);
+          store.game.setActiveRound(0);
+          store.game.setActiveSentence(0);
+          store.game.changeWinData([]);
 
           this.router.logout();
         }

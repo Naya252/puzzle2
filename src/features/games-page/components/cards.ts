@@ -15,19 +15,23 @@ export default class Cards extends BaseComponent {
 
   public addHandler(el: Round, card: BaseComponent): void {
     card.addListener('click', () => {
-      store.game.setActiveGame(el);
-      const { id } = el.levelData;
-      const activeLvl = id.split('_');
+      const activeGame = store.game.getActiveGame();
 
-      const Lvlid = Number(activeLvl[0]) - 1;
-      const roundid = Number(activeLvl[1]) - 1;
-      if (isNumLevel(Lvlid)) {
-        store.game.setActiveLevel(Lvlid);
-        store.game.setActiveRound(roundid);
-        store.game.setActiveSentence(0);
+      if (activeGame.levelData.id !== el.levelData.id) {
+        store.game.setActiveGame(el);
+        const { id } = el.levelData;
+        const activeLvl = id.split('_');
 
-        this.cb();
+        const Lvlid = Number(activeLvl[0]) - 1;
+        const roundid = Number(activeLvl[1]) - 1;
+
+        if (isNumLevel(Lvlid)) {
+          store.game.setActiveLevel(Lvlid);
+          store.game.setActiveRound(roundid);
+          store.game.setActiveSentence(0);
+        }
       }
+      this.cb();
     });
   }
 
@@ -41,6 +45,7 @@ export default class Cards extends BaseComponent {
       const { rounds } = data;
       if (rounds instanceof Array) {
         const completedRounds = store.game.getCompletedRounds();
+        const activeGame = store.game.getActiveGame();
 
         rounds.forEach((el: Round) => {
           const col = new BaseComponent('div', ['col', 'col-6', 'col-lg-4', 'col-xl-3']);
@@ -53,7 +58,9 @@ export default class Cards extends BaseComponent {
           if (completedRounds.includes(el.levelData.id)) {
             card.setClasses(['completed']);
           }
-
+          if (activeGame.levelData.id === el.levelData.id) {
+            card.setClasses(['active-game']);
+          }
           const name = new BaseComponent('p', ['name-img'], {}, el.levelData.name);
           const back = new BaseComponent('div', ['dark-layer']);
 

@@ -83,10 +83,16 @@ class GamePage extends BaseComponent {
     this.curRow = this.gameField.selectRow(0);
 
     const resizeObserver = new ResizeObserver(() => {
-      this.changeWidthImg(this.currentPoint).catch(() => {});
+      let i = 0;
+      while (i <= this.currentPoint) {
+        i += 1;
+        const idx = i - 1;
+        if (isNumSentence(idx)) {
+          this.changeWidthImg(idx).catch(() => {});
+        }
+      }
     });
     resizeObserver.observe(this.gameField.getElement());
-
     this.initFirstGame().catch(() => {});
   }
 
@@ -137,9 +143,10 @@ class GamePage extends BaseComponent {
   private async initFirstGame(i = 0): Promise<void> {
     if (i < this.currentPoint) {
       if (isNumSentence(i)) {
-        await this.createPuzzles(this.currentPoint);
+        await this.createPuzzles(i);
         this.completeSentence(i);
         this.addBlock(i);
+        this.showImages(i);
       }
       await this.initFirstGame(i + 1);
     } else {
@@ -171,6 +178,17 @@ class GamePage extends BaseComponent {
     this.gameData[i] = sentense;
   }
 
+  private showImages(i: NumSentence): void {
+    const data = this.gameData[i];
+    if (!isUndefined(data) && !isNull(data)) {
+      const words = data.wordsFullData;
+      words.forEach((el) => {
+        const child = el.node;
+        child?.removeClasses(['hide-img']);
+      });
+    }
+  }
+
   private addBlock(i: NumSentence): void {
     const data = this.gameData[i];
     if (!isUndefined(data) && !isNull(data)) {
@@ -184,9 +202,14 @@ class GamePage extends BaseComponent {
 
   private changeWinData(isWin: boolean): void {
     const data = this.gameData[this.currentPoint];
+
     if (!isUndefined(data) && !isNull(data)) {
       const { levelData } = data;
       levelData.isWin = isWin;
+      store.game.setWinData(isWin);
+      this.gameHints.showTraslate();
+      this.gameHints.showAudio();
+
       this.continueGame();
     }
   }
@@ -197,6 +220,8 @@ class GamePage extends BaseComponent {
     this.gameButtons.checkBtn.setTextContent('Check');
     this.gameButtons.checkBtn.removeClasses(['continue', 'moveArrow']);
     this.gameHints.showImages();
+    this.gameHints.hideTranslate();
+    this.gameHints.hideAudio();
 
     const arr = Array.from(this.curRow.childNodes);
     arr.forEach((el) => {
@@ -259,6 +284,7 @@ class GamePage extends BaseComponent {
             store.game.setActiveRound(0);
             store.game.setActiveGame(round);
             store.game.setActiveSentence(0);
+            store.game.changeWinData([]);
             this.currentPoint = store.game.getActiveSentence();
             this.data = store.game.getActiveGame();
             this.changeGameField();
@@ -597,13 +623,17 @@ class GamePage extends BaseComponent {
   private changeWords(lvlId: string, i: NumSentence): { data: Word; wordsFullData: GameData[] } {
     const data = this.selectSentence(i);
     const words = splitText(data?.textExample, ' ');
+    const winData = store.game.getWinData();
+
     const wordsFullData: GameData[] = words.map((el, idx) => ({
       id: `img_${lvlId}_${i}_${idx}`,
       word: el,
       length: el.length,
       widthPercents: 1,
       node: null,
+      isWin: winData[idx],
     }));
+
     return { data, wordsFullData };
   }
 }
