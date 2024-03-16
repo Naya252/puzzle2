@@ -9,7 +9,16 @@ import { ROUTES } from '@/router/pathes';
 
 import store from '@/store/store';
 import { USER_EMPTY, USER_SETTINGS_EMPTY } from '@/shared/constants';
-import { getUser, removeUser, getUserSettings, removeUserSettings } from '@/repository/login-repository';
+import {
+  getUser,
+  removeUser,
+  getUserSettings,
+  removeUserSettings,
+  getCompletedRounds,
+  removeCompletedRounds,
+  getCompletedLevels,
+  removeCompletedLevels,
+} from '@/repository/user-repository';
 import { changeHintSettings } from '@/features/game-page/conponents/hints/services/hint-service';
 import { getLevel, initDefaultGame } from './features/game-page/services/game-service';
 
@@ -45,6 +54,12 @@ export default class App {
 
     const hintsSettings = getUserSettings();
     changeHintSettings(hintsSettings);
+
+    const completedRounds = getCompletedRounds();
+    store.game.changeCompletedRounds(completedRounds);
+
+    const completedLevels = getCompletedLevels();
+    store.game.changeCompletedLevels(completedLevels);
 
     const lvl = store.game.getActiveLevel();
     getLevel(lvl)
@@ -85,6 +100,10 @@ export default class App {
           store.user.setUser(USER_EMPTY);
           removeUserSettings();
           changeHintSettings(USER_SETTINGS_EMPTY);
+          removeCompletedRounds();
+          store.game.changeCompletedRounds([]);
+          removeCompletedLevels();
+          store.game.changeCompletedLevels([]);
 
           this.router.logout();
         }

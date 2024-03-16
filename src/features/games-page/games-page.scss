@@ -85,4 +85,30 @@
       filter: brightness(1);
     }
   }
+
+  .completed {
+    &::before {
+      content: url('../../assets/icons/checkbox-marked.svg');
+      width: 1.2rem;
+      height: 1.2rem;
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      z-index: 1;
+    }
+  }
+}
+
+.completed-level {
+  position: relative;
+
+  &::before {
+    content: url('../../assets/icons/checkbox-multiple-marked.svg');
+    width: 1.2rem;
+    height: 1.2rem;
+    position: absolute;
+    top: calc(50% - 10px);
+    right: 8px;
+    z-index: 1;
+  }
 }

@@ -1,4 +1,5 @@
 import fetchLevelData from '@/repository/game-repository';
+import { getCompletedRounds, setCompletedLevels, setCompletedRounds } from '@/repository/user-repository';
 import { type NumLevel, type GameData, type NumSentence } from '@/types/types';
 import store from '@/store/store';
 import { isNull, isUndefined } from '@/utils/common-validator';
@@ -123,5 +124,29 @@ export function changeDisabled(btn: BaseButton, toDisabled: boolean): void {
     button.setAttribute('disabled', 'true');
   } else {
     button.removeAttribute('disabled');
+  }
+}
+
+export function changeCompletedRounds(strRound: string): void {
+  const allCompletedRounds = getCompletedRounds();
+  if (!allCompletedRounds.includes(strRound)) {
+    allCompletedRounds.push(strRound);
+    setCompletedRounds(allCompletedRounds);
+  }
+}
+
+export function changeCompletedLevels(numLevel: NumLevel): void {
+  const allCompletedLevels = store.game.getCompletedLevels();
+  if (!allCompletedLevels.includes(numLevel)) {
+    store.game.setCompletedLevels(numLevel);
+    setCompletedLevels(store.game.getCompletedLevels());
+  }
+}
+
+export function checkCompletedLevel(roundsCount: number, curLvl: NumLevel): void {
+  const allCompletedRounds = getCompletedRounds();
+  const allCompletedRoundsByCurLvl = allCompletedRounds.filter((el) => el.includes(`${curLvl + 1}_`));
+  if (roundsCount === allCompletedRoundsByCurLvl.length) {
+    changeCompletedLevels(curLvl);
   }
 }

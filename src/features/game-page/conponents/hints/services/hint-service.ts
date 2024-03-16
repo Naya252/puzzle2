@@ -1,6 +1,6 @@
 import BaseComponent from '@/components/base-component';
 import store from '@/store/store';
-import { saveUserSettings } from '@/repository/login-repository';
+import { saveUserSettings } from '@/repository/user-repository';
 import { type UserSettingsType } from '@/types/types';
 
 export function toggleHint(item: BaseComponent | ChildNode, isShow: boolean): void {

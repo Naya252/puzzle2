@@ -28,10 +28,16 @@ class GamesPage extends BaseComponent {
     const activeLevel = store.game.getActiveLevel();
     this.cards.drawCards(activeLevel);
   }
+
+  public changeCompletedLevels(): void {
+    this.levels.changeCompletedLevel();
+  }
 }
 
 const createPage = (fn: (route: string, isAuth: boolean) => void): BaseComponent => {
   const page = new GamesPage(fn);
+
+  page.changeCompletedLevels();
   return page;
 };
 

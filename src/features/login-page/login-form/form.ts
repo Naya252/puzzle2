@@ -3,7 +3,7 @@ import BaseInput from '@/components/base-input/base-input';
 import BaseButton from '@/components/base-button/base-button';
 import '@/features/login-page/login-form/form.scss';
 import isValid from '@/utils/form-validator';
-import { saveUser } from '@/repository/login-repository';
+import { saveUser } from '@/repository/user-repository';
 import store from '@/store/store';
 import { ROUTES } from '@/router/pathes';
 

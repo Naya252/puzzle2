@@ -1,4 +1,4 @@
-import type { RoundsData, Round, LevelData, Word } from '@/types/types';
+import type { RoundsData, Round, LevelData, Word, UserType, UserSettingsType } from '@/types/types';
 
 const isLevelData = (value: unknown): value is LevelData => {
   const fields = ['id', 'name', 'imageSrc', 'cutSrc', 'author', 'year'];
@@ -64,6 +64,54 @@ export const isRoundsData = (value: unknown): value is RoundsData => {
     'roundsCount' in value &&
     typeof value.roundsCount === 'number'
   ) {
+    return true;
+  }
+
+  return false;
+};
+
+export const isValidUser = (data: unknown): data is UserType => {
+  if (
+    typeof data === 'object' &&
+    data !== null &&
+    'name' in data &&
+    'surname' in data &&
+    typeof data.name === 'string' &&
+    typeof data.surname === 'string'
+  ) {
+    return true;
+  }
+
+  return false;
+};
+
+export const isValidUserSettings = (data: unknown): data is UserSettingsType => {
+  if (
+    typeof data === 'object' &&
+    data !== null &&
+    'isShowTranslate' in data &&
+    'isShowAudio' in data &&
+    'isShowImage' in data &&
+    typeof data.isShowTranslate === 'boolean' &&
+    typeof data.isShowAudio === 'boolean' &&
+    typeof data.isShowImage === 'boolean'
+  ) {
+    return true;
+  }
+
+  return false;
+};
+
+export const isValidCompletedRounds = (data: unknown): data is string[] => {
+  if (typeof data === 'object' && data !== null && data instanceof Array && typeof data[0] === 'string') {
+    return true;
+  }
+
+  return false;
+};
+
+export const isValidCompletedLevels = (data: unknown): data is number[] => {
+  if (typeof data === 'object' && data !== null && data instanceof Array && typeof data[0] === 'number') {
     return true;
   }
 

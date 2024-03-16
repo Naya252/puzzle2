@@ -23,6 +23,8 @@ import {
   createData,
   getLevel,
   changeDisabled,
+  changeCompletedRounds,
+  checkCompletedLevel,
 } from '@/features/game-page/services/game-service';
 
 import GameTitle from './conponents/game-title';
@@ -211,8 +213,13 @@ class GamePage extends BaseComponent {
   private goTonextRound(): void {
     const curLvl = store.game.getActiveLevel();
     const levelData = store.game.getLevelData(curLvl);
+    const roundId = this.data.levelData.id;
+    store.game.setCompletedRounds(roundId);
+    changeCompletedRounds(roundId);
 
     if (!isNull(levelData)) {
+      checkCompletedLevel(levelData.roundsCount, curLvl);
+
       const curRound = store.game.getActiveRound();
       const nextRound = curRound + 1;
       const { rounds } = levelData;

@@ -40,6 +40,8 @@ export default class Cards extends BaseComponent {
     if ('rounds' in data) {
       const { rounds } = data;
       if (rounds instanceof Array) {
+        const completedRounds = store.game.getCompletedRounds();
+
         rounds.forEach((el: Round) => {
           const col = new BaseComponent('div', ['col', 'col-6', 'col-lg-4', 'col-xl-3']);
 
@@ -47,6 +49,10 @@ export default class Cards extends BaseComponent {
           const elCard = card.getElement();
           const url = `${IMG_URL}${el.levelData.cutSrc}`;
           elCard.style.background = `#464849 center / cover no-repeat url(${url})`;
+
+          if (completedRounds.includes(el.levelData.id)) {
+            card.setClasses(['completed']);
+          }
 
           const name = new BaseComponent('p', ['name-img'], {}, el.levelData.name);
           const back = new BaseComponent('div', ['dark-layer']);

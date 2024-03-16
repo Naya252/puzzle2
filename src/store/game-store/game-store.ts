@@ -12,6 +12,8 @@ export default class Game {
   private isShowTranslate: boolean;
   private isShowAudio: boolean;
   private isShowImage: boolean;
+  private completedRounds: string[];
+  private completedLevels: number[];
 
   constructor(activeLevel: NumLevel = 0, activeRound = 0, activeSentence: NumSentence = 0) {
     this.activeLevel = activeLevel;
@@ -28,6 +30,8 @@ export default class Game {
     this.isShowTranslate = true;
     this.isShowAudio = true;
     this.isShowImage = true;
+    this.completedRounds = [];
+    this.completedLevels = [];
   }
 
   public getActiveLevel(): NumLevel {
@@ -148,5 +152,29 @@ export default class Game {
       isShowAudio: this.isShowAudio,
       isShowImage: this.isShowImage,
     };
+  }
+
+  public getCompletedRounds(): string[] {
+    return this.completedRounds;
+  }
+
+  public setCompletedRounds(round: string): void {
+    this.completedRounds.push(round);
+  }
+
+  public changeCompletedRounds(rounds: string[]): void {
+    this.completedRounds = rounds;
+  }
+
+  public getCompletedLevels(): number[] {
+    return this.completedLevels;
+  }
+
+  public setCompletedLevels(numLevel: number): void {
+    this.completedLevels.push(numLevel);
+  }
+
+  public changeCompletedLevels(levels: number[]): void {
+    this.completedLevels = levels;
   }
 }
