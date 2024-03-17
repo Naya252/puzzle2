@@ -6,6 +6,7 @@ export default class GameButtons extends BaseComponent {
   public checkBtn: BaseButton;
   public autocompleteBtn: BaseButton;
   public nextRoundBtn: BaseButton;
+  public resultsdBtn: BaseButton;
 
   constructor() {
     super('div', ['buttons-container'], {});
@@ -19,7 +20,8 @@ export default class GameButtons extends BaseComponent {
       'continue',
       'hide',
     ]);
+    this.resultsdBtn = new BaseButton('button', 'Results', ['check-btn', 'outlined', 'hide']);
 
-    this.append(this.autocompleteBtn, this.checkBtn, this.nextRoundBtn);
+    this.append(this.autocompleteBtn, this.checkBtn, this.resultsdBtn, this.nextRoundBtn);
   }
 }

@@ -80,8 +80,15 @@ class GamePage extends BaseComponent {
     this.checkListener();
     this.autocompleteListener();
     this.nextRoundListener();
+    this.resultsListener();
+
     this.curRow = this.gameField.selectRow(0);
 
+    this.initResizeObserver();
+    this.initFirstGame().catch(() => {});
+  }
+
+  private initResizeObserver(): void {
     const resizeObserver = new ResizeObserver(() => {
       let i = 0;
       while (i <= this.currentPoint) {
@@ -93,7 +100,6 @@ class GamePage extends BaseComponent {
       }
     });
     resizeObserver.observe(this.gameField.getElement());
-    this.initFirstGame().catch(() => {});
   }
 
   private getUrl(): string {
@@ -147,6 +153,14 @@ class GamePage extends BaseComponent {
     });
   }
 
+  private resultsListener(): void {
+    this.gameButtons.resultsdBtn.addListener('click', () => {
+      console.log('results');
+      this.wordsContainer.setClasses(['invisible-element']);
+      this.gameField.setClasses(['invisible-element']);
+    });
+  }
+
   private autocompleteListener(): void {
     this.gameButtons.autocompleteBtn.addListener('click', () => {
       this.completeSentence(this.currentPoint);
@@ -166,6 +180,9 @@ class GamePage extends BaseComponent {
       await this.initFirstGame(i + 1);
     } else {
       this.startNewGame().catch(() => {});
+      console.log('init new game');
+      // this.wordsContainer.removeClasses(['invisible-element']);
+      // this.gameField.removeClasses(['invisible-element']);
     }
   }
 
@@ -349,6 +366,7 @@ class GamePage extends BaseComponent {
         `${this.data.levelData.author} - ${this.data.levelData.name} (${this.data.levelData.year})`,
       );
       this.gameButtons.nextRoundBtn.removeClasses(['hide']);
+      this.gameButtons.resultsdBtn.removeClasses(['hide']);
       setTimeout(() => {
         this.gameButtons.nextRoundBtn.setClasses(['moveArrow']);
       }, 300);
