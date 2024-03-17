@@ -1,10 +1,8 @@
 import '@/features/game-page/conponents/hints/hints.scss';
 import BaseComponent from '@/components/base-component';
-import BaseButton from '@/components/base-button/base-button';
 
 import Eye from '@/assets/icons/eye-outline.svg';
 import EyeOff from '@/assets/icons/eye-off-outline.svg';
-import Play from '@/assets/icons/play-circle-outline.svg';
 import Volume from '@/assets/icons/volume-high.svg';
 import VolumeOff from '@/assets/icons/volume-off.svg';
 import Image from '@/assets/icons/image-outline.svg';
@@ -13,6 +11,7 @@ import ImageOff from '@/assets/icons/image-off-outline.svg';
 import { toggleHint, setHintSettings } from '@/features/game-page/conponents/hints/services/hint-service';
 import store from '@/store/store';
 import HintBtn from './hint';
+import AudioBtn from './audioBtn';
 
 export default class GameHints extends BaseComponent {
   private readonly hintsSettingsContainer: BaseComponent;
@@ -21,8 +20,7 @@ export default class GameHints extends BaseComponent {
   private readonly imgSettingBtn: HintBtn;
 
   private readonly translateHint: BaseComponent;
-  private readonly audioHint: BaseButton;
-  private audio: HTMLAudioElement;
+  private readonly audioBtn: AudioBtn;
   private puzzles: ChildNode[];
 
   constructor(audioUrl: string) {
@@ -35,18 +33,13 @@ export default class GameHints extends BaseComponent {
     this.imgSettingBtn = this.initImgHint(store.game.getIsShowImage());
 
     this.translateHint = new BaseComponent('p', ['text', 'invisible'], {}, 'text');
-    this.audioHint = new BaseButton('button', '', ['audio', 'icon-btn']);
-    const audioHintIcon = new BaseComponent('img', ['icon'], { alt: '', src: Play });
-    this.audioHint.append(audioHintIcon);
-    this.audioHint.addListener('click', () => {
-      this.playAudio();
-    });
 
-    this.audio = new Audio();
+    this.audioBtn = new AudioBtn(audioUrl);
+
     this.changeAudioHint(audioUrl);
 
     this.hintsSettingsContainer.append(this.translateSettingBtn, this.audioSettingBtn, this.imgSettingBtn);
-    this.append(this.audioHint, this.translateHint, this.hintsSettingsContainer);
+    this.append(this.audioBtn, this.translateHint, this.hintsSettingsContainer);
   }
 
   private initTranslateHint(isShowTranslate: boolean): HintBtn {
@@ -65,7 +58,7 @@ export default class GameHints extends BaseComponent {
   private initAudioHint(isShowAudio: boolean): HintBtn {
     return new HintBtn(
       (isShow) => {
-        toggleHint(this.audioHint, isShow);
+        toggleHint(this.audioBtn, isShow);
         store.game.setIsShowAudio(isShow);
         setHintSettings();
       },
@@ -122,32 +115,16 @@ export default class GameHints extends BaseComponent {
   }
 
   public changeAudioHint(url: string): void {
-    this.audio = new Audio(url);
-    toggleHint(this.audioHint, store.game.getIsShowAudio());
-    this.audio.addEventListener('ended', () => {
-      this.removeActive();
-    });
+    this.audioBtn.changeAudioHint(url);
+    toggleHint(this.audioBtn, store.game.getIsShowAudio());
   }
 
   public showAudio(): void {
-    toggleHint(this.audioHint, true);
+    toggleHint(this.audioBtn, true);
   }
 
   public hideAudio(): void {
-    toggleHint(this.audioHint, false);
-  }
-
-  public playAudio(): void {
-    this.audio
-      .play()
-      .then(() => {
-        this.audioHint.setClasses(['animated']);
-      })
-      .catch(() => {});
-  }
-
-  public removeActive(): void {
-    this.audioHint.removeClasses(['animated']);
+    toggleHint(this.audioBtn, false);
   }
 
   public changePuzzles(puzzles: BaseComponent): void {
