@@ -392,7 +392,6 @@ class GamePage extends BaseComponent {
   }
 
   private continueGame(): void {
-    console.log('continue');
     this.addBlock(this.currentPoint);
 
     changeDisabled(this.gameButtons.autocompleteBtn, true);
