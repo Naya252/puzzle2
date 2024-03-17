@@ -21,6 +21,10 @@
     transition: transform 0.5s linear;
   }
 
+  &.next-round {
+    min-width: 280px;
+  }
+
   &.moveArrow {
     &:after {
       transform: translateX(16px);

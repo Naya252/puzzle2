@@ -79,7 +79,7 @@ class GamePage extends BaseComponent {
 
     this.checkListener();
     this.autocompleteListener();
-
+    this.nextRoundListener();
     this.curRow = this.gameField.selectRow(0);
 
     const resizeObserver = new ResizeObserver(() => {
@@ -128,6 +128,21 @@ class GamePage extends BaseComponent {
           this.changeToDefault();
           this.changeCurrentPoint();
         }
+      }
+    });
+  }
+
+  private nextRoundListener(): void {
+    this.gameButtons.nextRoundBtn.addListener('click', (e) => {
+      if (!isNull(e.target) && isHTMLElement(e.target)) {
+        this.gameButtons.nextRoundBtn.removeClasses(['move-arrow']);
+        this.gameButtons.nextRoundBtn.setClasses(['hide']);
+        this.gameButtons.checkBtn.removeClasses(['hide']);
+        this.gameButtons.autocompleteBtn.removeClasses(['hide']);
+        this.gameHints.removeClasses(['invisible-element']);
+        this.wordsContainer.removeClasses(['bg-transparent']);
+        this.gameField.removeClasses(['usual-image']);
+        this.goTonextRound();
       }
     });
   }
@@ -319,11 +334,65 @@ class GamePage extends BaseComponent {
       store.game.setActiveSentence(this.currentPoint);
       this.startNewGame().catch(() => {});
     } else {
-      this.goTonextRound();
+      this.hideCompletedGame();
     }
   }
 
+  private showcompletedImage(): void {
+    this.gameField.removeClasses(['to-white']);
+    this.gameField.setClasses(['invisible-element', 'usual-image']);
+    setTimeout(() => {
+      this.gameField.setClasses(['linear']);
+      this.gameField.removeClasses(['invisible-element']);
+      this.wordsContainer.setHTML('');
+      this.wordsContainer.setHTML(
+        `${this.data.levelData.author} - ${this.data.levelData.name} (${this.data.levelData.year})`,
+      );
+      this.gameButtons.nextRoundBtn.removeClasses(['hide']);
+      setTimeout(() => {
+        this.gameButtons.nextRoundBtn.setClasses(['moveArrow']);
+      }, 300);
+    }, 300);
+  }
+
+  private hideCompletedGame(): void {
+    const arr = Array.from(Object.values(this.gameData));
+    arr.reverse();
+    this.gameField.setClasses(['to-white']);
+    this.gameButtons.checkBtn.setClasses(['hide']);
+    this.gameButtons.autocompleteBtn.setClasses(['hide']);
+    this.gameHints.setClasses(['invisible-element']);
+    this.wordsContainer.setClasses(['bg-transparent']);
+    arr.forEach((el, i) => {
+      setTimeout(
+        () => {
+          const elArr = Array.from(Object.values(el.wordsFullData));
+          elArr.reverse();
+          elArr.forEach((element, index) => {
+            setTimeout(
+              () => {
+                setTimeout(
+                  () => {
+                    element.node?.setClasses(['invisible-element']);
+                    if (i === arr.length - 1 && index === elArr.length - 1) {
+                      this.showcompletedImage();
+                    }
+                  },
+                  (index + 1) * 100,
+                );
+                element.node?.setClasses(['puzzle-scale']);
+              },
+              (index + 1) * 100,
+            );
+          });
+        },
+        (i + 1) * 100,
+      );
+    });
+  }
+
   private continueGame(): void {
+    console.log('continue');
     this.addBlock(this.currentPoint);
 
     changeDisabled(this.gameButtons.autocompleteBtn, true);

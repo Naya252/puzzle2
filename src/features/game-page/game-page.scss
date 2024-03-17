@@ -44,6 +44,10 @@
   }
 }
 
+.usual-image {
+  background-blend-mode: normal !important;
+}
+
 .words-container {
   display: flex;
   width: 100%;
@@ -51,6 +55,14 @@
   margin: 1rem auto;
   aspect-ratio: 16 / 0.9;
   background-color: $light-color2;
+  color: $dark-color;
+  font-size: 1.2rem;
+  font-weight: 600;
+  justify-content: center;
+}
+
+.bg-transparent {
+  background-color: transparent;
 }
 
 .tail-puzzle {
@@ -138,6 +150,15 @@
 
 .puzzle-scale {
   transform: scale(0.9);
+  transition: all 0.3s ease;
+}
+
+.linear {
+  transition: opacity 0.3s linear;
+}
+
+.invisible-element {
+  opacity: 0;
 }
 
 .active {
@@ -148,6 +169,11 @@
     background-blend-mode: luminosity;
     background-color: rgba($main-color, 0.5);
   }
+}
+
+.to-white {
+  background: #ffffff !important;
+  background-blend-mode: color !important;
 }
 
 .block {
