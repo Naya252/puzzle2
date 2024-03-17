@@ -145,9 +145,12 @@ class GamePage extends BaseComponent {
         this.gameButtons.nextRoundBtn.setClasses(['hide']);
         this.gameButtons.checkBtn.removeClasses(['hide']);
         this.gameButtons.autocompleteBtn.removeClasses(['hide']);
+        this.gameButtons.resultsdBtn.setClasses(['hide']);
+
         this.gameHints.removeClasses(['invisible-element']);
-        this.wordsContainer.removeClasses(['bg-transparent']);
-        this.gameField.removeClasses(['usual-image']);
+        this.wordsContainer.removeClasses(['bg-transparent', 'invisible-element']);
+        this.gameField.removeClasses(['usual-image', 'invisible-element']);
+
         this.goTonextRound();
       }
     });
@@ -155,7 +158,7 @@ class GamePage extends BaseComponent {
 
   private resultsListener(): void {
     this.gameButtons.resultsdBtn.addListener('click', () => {
-      console.log('results');
+      this.gameButtons.resultsdBtn.setClasses(['hide']);
       this.wordsContainer.setClasses(['invisible-element']);
       this.gameField.setClasses(['invisible-element']);
     });
@@ -180,9 +183,6 @@ class GamePage extends BaseComponent {
       await this.initFirstGame(i + 1);
     } else {
       this.startNewGame().catch(() => {});
-      console.log('init new game');
-      // this.wordsContainer.removeClasses(['invisible-element']);
-      // this.gameField.removeClasses(['invisible-element']);
     }
   }
 
@@ -410,7 +410,6 @@ class GamePage extends BaseComponent {
   }
 
   private continueGame(): void {
-    console.log('continue');
     this.addBlock(this.currentPoint);
 
     changeDisabled(this.gameButtons.autocompleteBtn, true);
