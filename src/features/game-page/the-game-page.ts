@@ -151,7 +151,7 @@ class GamePage extends BaseComponent {
         this.gameButtons.resultsdBtn.setClasses(['hide']);
 
         this.gameHints.removeClasses(['invisible-element']);
-        this.wordsContainer.removeClasses(['bg-transparent', 'invisible-element']);
+        this.wordsContainer.removeClasses(['bg-transparent', 'hide']);
         this.gameField.removeClasses(['usual-image', 'invisible-element', 'hide']);
 
         store.game.changeWinData([]);
@@ -180,6 +180,12 @@ class GamePage extends BaseComponent {
     const knowData = arr.filter((el) => el.levelData.isWin);
     const dontKnowData = arr.filter((el) => el.levelData.isWin === false);
 
+    this.statistics.fillInfo(
+      this.data.levelData.cutSrc,
+      this.data.levelData.author,
+      this.data.levelData.name,
+      this.data.levelData.year,
+    );
     this.statistics.fillKnow(knowData);
     this.statistics.fillDotKnow(dontKnowData);
   }
