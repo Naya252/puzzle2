@@ -70,6 +70,8 @@ export default class LoginForm extends BaseComponent {
       saveUser(userData);
       store.user.setUser(userData);
       this.pushRouter(ROUTES.Start, store.user.hasUser());
+      store.game.removeActiveLink();
+      store.game.addActiveLink(ROUTES.Start);
     }
 
     this.element.classList.add('was-validated');

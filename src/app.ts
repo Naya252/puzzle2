@@ -23,6 +23,7 @@ import {
 } from '@/repository/user-repository';
 import { changeHintSettings } from '@/features/game-page/conponents/hints/services/hint-service';
 import { getLevel, initDefaultGame } from './features/game-page/services/game-service';
+import type { NumLevel } from './types/types';
 
 export default class App {
   private readonly appContainer: BaseComponent;
@@ -69,9 +70,13 @@ export default class App {
     store.game.setActiveSentence(lastGame.sentence);
     store.game.changeWinData(lastGame.winData);
 
-    getLevel(lastGame.level)
+    this.fillGameData(lastGame.level, lastGame.round);
+  }
+
+  public fillGameData(level: NumLevel = 0, round = 0): void {
+    getLevel(level)
       .then(() => {
-        initDefaultGame(lastGame.level, lastGame.round);
+        initDefaultGame(level, round);
         this.router.push('', store.user.hasUser());
 
         const active = this.links.find(
@@ -115,7 +120,7 @@ export default class App {
           store.game.setActiveLevel(0);
           store.game.setActiveRound(0);
           store.game.setActiveSentence(0);
-          store.game.changeWinData([]);
+          this.fillGameData();
 
           this.router.logout();
         }

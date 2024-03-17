@@ -1,0 +1,24 @@
+@import '../../../../styles/variables';
+
+.result {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background-color: #fff;
+  display: flex;
+  gap: 80px;
+  padding: 40px;
+
+  .result-block {
+    color: $dark-color;
+    width: calc(50% - 20px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .empty-text {
+    padding-top: 12px;
+    border-top: 1px solid $dark-color;
+  }
+}

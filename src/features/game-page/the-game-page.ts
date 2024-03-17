@@ -32,6 +32,7 @@ import GameHints from './conponents/hints/game-hints';
 import GameField from './conponents/game-field';
 import WordsContainer from './conponents/words-container';
 import GameButtons from './conponents/buttons/game-buttons';
+import Statistics from './conponents/statistics/statisics';
 
 const splitText = (text: string, operator: string): string[] => {
   const data = text.split(operator);
@@ -45,6 +46,7 @@ class GamePage extends BaseComponent {
   private readonly wordsContainer: WordsContainer;
   private readonly gameWrapper: BaseComponent;
   private readonly gameButtons: GameButtons;
+  private readonly statistics: Statistics;
 
   private currentPoint: NumSentence;
   private data: Round;
@@ -55,7 +57,7 @@ class GamePage extends BaseComponent {
   private curRow: ChildNode;
   private readonly arrWords: BaseComponent;
 
-  constructor(pushRouter: (route: string, isAuth: boolean) => void) {
+  constructor() {
     super('div', ['game'], {});
     this.puzzle = null;
     this.puzzleParent = null;
@@ -73,7 +75,8 @@ class GamePage extends BaseComponent {
     this.gameField = new GameField();
     const url = this.getUrl();
     this.gameField.changeImage(url);
-    this.gameWrapper.append(this.gameField, this.wordsContainer);
+    this.statistics = new Statistics();
+    this.gameWrapper.append(this.gameField, this.statistics, this.wordsContainer);
     this.gameButtons = new GameButtons();
     this.append(this.gameTitle, this.gameHints, this.gameWrapper, this.gameButtons);
 
@@ -149,8 +152,13 @@ class GamePage extends BaseComponent {
 
         this.gameHints.removeClasses(['invisible-element']);
         this.wordsContainer.removeClasses(['bg-transparent', 'invisible-element']);
-        this.gameField.removeClasses(['usual-image', 'invisible-element']);
+        this.gameField.removeClasses(['usual-image', 'invisible-element', 'hide']);
 
+        store.game.changeWinData([]);
+
+        this.statistics.cleanStatistic();
+        this.statistics.setClasses(['hide']);
+        this.gameButtons.nextRoundBtn.setClasses(['hide']);
         this.goTonextRound();
       }
     });
@@ -159,9 +167,21 @@ class GamePage extends BaseComponent {
   private resultsListener(): void {
     this.gameButtons.resultsdBtn.addListener('click', () => {
       this.gameButtons.resultsdBtn.setClasses(['hide']);
-      this.wordsContainer.setClasses(['invisible-element']);
-      this.gameField.setClasses(['invisible-element']);
+      this.wordsContainer.setHTML('');
+
+      this.initStatistics();
+      this.statistics.removeClasses(['hide']);
+      this.gameField.setClasses(['hide']);
     });
+  }
+
+  private initStatistics(): void {
+    const arr = Array.from(Object.values(this.gameData));
+    const knowData = arr.filter((el) => el.levelData.isWin);
+    const dontKnowData = arr.filter((el) => el.levelData.isWin === false);
+
+    this.statistics.fillKnow(knowData);
+    this.statistics.fillDotKnow(dontKnowData);
   }
 
   private autocompleteListener(): void {
@@ -238,9 +258,13 @@ class GamePage extends BaseComponent {
     if (!isUndefined(data) && !isNull(data)) {
       const { levelData } = data;
       levelData.isWin = isWin;
-      store.game.setWinData(isWin);
+
       this.gameHints.showTraslate();
       this.gameHints.showAudio();
+
+      if (this.currentPoint < 9) {
+        store.game.setWinData(isWin);
+      }
 
       this.continueGame();
     }
@@ -711,21 +735,25 @@ class GamePage extends BaseComponent {
     const words = splitText(data?.textExample, ' ');
     const winData = store.game.getWinData();
 
-    const wordsFullData: GameData[] = words.map((el, idx) => ({
-      id: `img_${lvlId}_${i}_${idx}`,
-      word: el,
-      length: el.length,
-      widthPercents: 1,
-      node: null,
-      isWin: winData[idx],
-    }));
+    const wordsFullData: GameData[] = words.map((el, idx) => {
+      data.isWin = winData[idx];
 
+      const fullData = {
+        id: `img_${lvlId}_${i}_${idx}`,
+        word: el,
+        length: el.length,
+        widthPercents: 1,
+        node: null,
+      };
+
+      return fullData;
+    });
     return { data, wordsFullData };
   }
 }
 
-const createPage = (fn: (route: string, isAuth: boolean) => void): BaseComponent => {
-  const page = new GamePage(fn);
+const createPage = (): BaseComponent => {
+  const page = new GamePage();
   return page;
 };
 

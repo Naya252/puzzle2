@@ -66,6 +66,8 @@ class AuthPage extends BaseComponent {
     const startButton = new BaseButton('button', 'Start', ['start']);
     startButton.addListener('click', () => {
       pushRouter(ROUTES.Games, store.user.hasUser());
+      store.game.removeActiveLink();
+      store.game.addActiveLink(ROUTES.Games);
     });
 
     content.append(greeting, about, advantages, finalText, startButton);
