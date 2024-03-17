@@ -77,7 +77,6 @@ class GamePage extends BaseComponent {
     this.gameWrapper.append(this.gameField, this.wordsContainer);
     this.gameButtons = new GameButtons();
     this.append(this.gameTitle, this.gameHints, this.gameWrapper, this.gameButtons);
-
     this.checkListener();
     this.autocompleteListener();
     this.nextRoundListener();
