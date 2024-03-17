@@ -220,6 +220,10 @@ class GamePage extends BaseComponent {
 
   private async createPuzzles(i = this.currentPoint): Promise<void> {
     this.curRow = this.gameField.selectRow(i);
+    if (isHTMLElement(this.curRow)) {
+      this.curRow.classList.add('active-row');
+    }
+
     await this.fillData(i);
     this.createHtmlWords(i);
     await this.changeWidthImg(i);
@@ -452,6 +456,10 @@ class GamePage extends BaseComponent {
   }
 
   private completeSentence(idx: NumSentence): void {
+    if (isHTMLElement(this.curRow)) {
+      this.curRow.classList.remove('active-row');
+    }
+
     const data = this.gameData[idx];
     if (!isUndefined(data) && !isNull(data)) {
       const words = data.wordsFullData;
@@ -482,6 +490,10 @@ class GamePage extends BaseComponent {
   }
 
   private isCorrectSentense(): boolean {
+    if (isHTMLElement(this.curRow)) {
+      this.curRow.classList.remove('active-row');
+    }
+
     const arr = Array.from(this.curRow.childNodes);
     const isCorrect = arr.every((el, i) => {
       const img = el.firstChild;
@@ -604,15 +616,15 @@ class GamePage extends BaseComponent {
         }
         this.arrWords.append(word);
 
-        this.handlerPuzzle(word);
-        this.handlerTouch(word);
+        this.handlePuzzle(word);
+        this.handleTouch(word);
         this.handleCol(colResult);
         this.handleCol(colContainer);
       });
     }
   }
 
-  private handlerTouch(wordPuzzle: BaseComponent): void {
+  private handleTouch(wordPuzzle: BaseComponent): void {
     let newParent: HTMLElement | null | undefined;
     wordPuzzle.addListener('touchstart', (event: Event): void => {
       if (!isNull(event.target) && isHTMLElement(event.target)) {
@@ -652,7 +664,7 @@ class GamePage extends BaseComponent {
     });
   }
 
-  private handlerPuzzle(wordPuzzle: BaseComponent): void {
+  private handlePuzzle(wordPuzzle: BaseComponent): void {
     wordPuzzle.addListener('click', (event: Event): void => {
       if (!isNull(event.target) && isHTMLElement(event.target)) {
         const parent = event.target.parentNode;

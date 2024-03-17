@@ -5,6 +5,17 @@ import { type Round } from '@/types/types';
 import { IMG_URL } from '@/shared/constants';
 import { isNumLevel } from '@/utils/common-validator';
 
+const loadImg = (node: BaseButton, url: string): void => {
+  const element = node.getElement();
+  const tempImage = new Image();
+  tempImage.onload = () => {
+    element.style.backgroundImage = `url(${url})`;
+    element.style.background = `#dee2e6 center / cover no-repeat url(${url})`;
+    node.removeClasses(['loader']);
+  };
+  tempImage.src = url;
+};
+
 export default class Cards extends BaseComponent {
   private readonly cb: VoidFunction;
 
@@ -50,11 +61,9 @@ export default class Cards extends BaseComponent {
         rounds.forEach((el: Round) => {
           const col = new BaseComponent('div', ['col', 'col-6', 'col-lg-4', 'col-xl-3']);
 
-          const card = new BaseButton('button', ``, ['game-card']);
-          const elCard = card.getElement();
+          const card = new BaseButton('button', ``, ['game-card', 'loader']);
           const url = `${IMG_URL}${el.levelData.cutSrc}`;
-          elCard.style.background = `#464849 center / cover no-repeat url(${url})`;
-
+          loadImg(card, url);
           if (completedRounds.includes(el.levelData.id)) {
             card.setClasses(['completed']);
           }

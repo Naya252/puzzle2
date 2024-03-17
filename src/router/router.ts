@@ -7,45 +7,23 @@ export default class AppRouter extends Router {
   public routerOutlet: BaseComponent;
   public changeHeader: VoidFunction;
 
-  // eslint-disable-next-line max-lines-per-function
-  constructor(routerOutlet: BaseComponent, fn: VoidFunction) {
+  constructor(routerOutlet: BaseComponent, onChangeHeader: VoidFunction) {
     super(
       [
-        {
-          name: ROUTES.Login,
-          component: async () => {
-            const { default: createPage } = await import('@/features/login-page/login-page');
-            return createPage((route: string, isAuth: boolean) => {
-              this.push(route, isAuth);
-            });
-          },
+        { name: ROUTES.Login, module: import('@/features/login-page/login-page') },
+        { name: ROUTES.Start, module: import('@/features/start-page/start-page') },
+        { name: ROUTES.Games, module: import('@/features/games-page/games-page') },
+        { name: ROUTES.Game, module: import('@/features/game-page/the-game-page') },
+      ].map(({ name, module }) => ({
+        name,
+        component: async () => {
+          const { default: createPage } = await module;
+          return createPage((route: string, isAuth: boolean) => {
+            this.push(route, isAuth);
+          });
         },
-        {
-          name: ROUTES.Start,
-          component: async () => {
-            const { default: createPage } = await import('@/features/start-page/start-page');
-            return createPage((route: string, isAuth: boolean) => {
-              this.push(route, isAuth);
-            });
-          },
-        },
-        {
-          name: ROUTES.Games,
-          component: async () => {
-            const { default: createPage } = await import('@/features/games-page/games-page');
-            return createPage((route: string, isAuth: boolean) => {
-              this.push(route, isAuth);
-            });
-          },
-        },
-        {
-          name: ROUTES.Game,
-          component: async () => {
-            const { default: createPage } = await import('@/features/game-page/the-game-page');
-            return createPage();
-          },
-        },
-      ],
+      })),
+
       async (route: Route) => {
         const component = await route.component();
         routerOutlet.replaceChildren(component);
@@ -57,7 +35,7 @@ export default class AppRouter extends Router {
     );
 
     this.routerOutlet = routerOutlet;
-    this.changeHeader = fn;
+    this.changeHeader = onChangeHeader;
   }
 
   public push(route = '', isAuth = false): void {
