@@ -8,7 +8,7 @@ import AppRouter from '@/router/router';
 import { ROUTES } from '@/router/pathes';
 
 import store from '@/store/store';
-import { USER_EMPTY, USER_SETTINGS_EMPTY } from '@/shared/constants';
+import { USER_EMPTY, USER_SETTINGS_EMPTY, MENU_ICONS } from '@/shared/constants';
 import {
   getUser,
   removeUser,
@@ -79,9 +79,7 @@ export default class App {
         initDefaultGame(level, round);
         this.router.push('', store.user.hasUser());
 
-        const active = this.links.find(
-          (el) => el.textContent?.toLocaleLowerCase() === window.location.pathname.slice(1),
-        );
+        const active = this.links.find((el) => el.id?.toLocaleLowerCase() === window.location.pathname.slice(1));
         active?.classList.add('active-nav');
       })
       .catch(() => {
@@ -95,8 +93,13 @@ export default class App {
   }
 
   private createLinks(): HTMLElement[] {
-    return Object.entries(ROUTES).map(([name, route]) => {
-      const link = new BaseComponent('a', ['nav-link'], { id: route, href: route }, name === 'Login' ? 'Logout' : name);
+    return Object.entries(ROUTES).map(([name, route], i) => {
+      const link = new BaseComponent('a', ['nav-link'], { id: route, href: route });
+      const icon = `${MENU_ICONS[i]} <span>${name === 'Login' ? 'Logout' : name}</span>`;
+      link.setHTML(icon);
+      if (name === 'Login') {
+        link.setClasses(['logout']);
+      }
 
       link.addListener('click', (event) => {
         event.preventDefault();

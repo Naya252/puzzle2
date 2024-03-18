@@ -52,12 +52,23 @@
 
 .links {
   display: flex;
-  gap: 16px;
+  gap: 2rem;
+}
+
+.logout {
+  margin-left: 1.5rem;
 }
 
 .nav-link {
   color: $light-color;
   user-select: none;
+  display: flex;
+  gap: 8px;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
 
   &.active-nav {
     color: $main-color;
