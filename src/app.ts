@@ -8,7 +8,7 @@ import AppRouter from '@/router/router';
 import { ROUTES } from '@/router/pathes';
 
 import store from '@/store/store';
-import { USER_EMPTY, USER_SETTINGS_EMPTY } from '@/shared/constants';
+import { USER_EMPTY, USER_SETTINGS_EMPTY, MENU_ICONS } from '@/shared/constants';
 import {
   getUser,
   removeUser,
@@ -95,8 +95,13 @@ export default class App {
   }
 
   private createLinks(): HTMLElement[] {
-    return Object.entries(ROUTES).map(([name, route]) => {
-      const link = new BaseComponent('a', ['nav-link'], { id: route, href: route }, name === 'Login' ? 'Logout' : name);
+    return Object.entries(ROUTES).map(([name, route], i) => {
+      const link = new BaseComponent('a', ['nav-link'], { id: route, href: route });
+      const icon = `${MENU_ICONS[i]} <span>${name === 'Login' ? 'Logout' : name}</span>`;
+      link.setHTML(icon);
+      if (name === 'Login') {
+        link.setClasses(['logout']);
+      }
 
       link.addListener('click', (event) => {
         event.preventDefault();

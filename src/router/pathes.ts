@@ -1,9 +1,8 @@
 export const ROUTES = {
-  Login: 'login',
   Start: 'start',
   Games: 'games',
   Game: 'game',
-  // Statistic: 'statistic',
+  Login: 'login',
 } as const;
 
 type AppRoute = (typeof ROUTES)[keyof typeof ROUTES] | '404';
