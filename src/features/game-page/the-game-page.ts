@@ -704,7 +704,7 @@ class GamePage extends BaseComponent {
   private handleCol(col: BaseComponent): void {
     col.addListener('dragover', (event: Event): void => {
       if (!isNull(this.puzzle)) {
-        dragOver(event, this.puzzle);
+        dragOver(event, this.puzzle, this.currentPoint);
       }
     });
 

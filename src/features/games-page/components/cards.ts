@@ -3,7 +3,27 @@ import BaseButton from '@/components/base-button/base-button';
 import store from '@/store/store';
 import { type Round } from '@/types/types';
 import { IMG_URL } from '@/shared/constants';
-import { isNumLevel } from '@/utils/common-validator';
+import { isNumLevel, isUndefined } from '@/utils/common-validator';
+
+const loadImg = (node: BaseButton, url: string): void => {
+  const element = node.getElement();
+  const tempImage = new Image();
+  tempImage.onload = () => {
+    element.style.backgroundImage = `url(${url})`;
+    element.style.background = `#dee2e6 center / cover no-repeat url(${url})`;
+    node.removeClasses(['loader']);
+  };
+  tempImage.src = url;
+};
+
+const scrollToActive = (element: BaseButton | undefined): void => {
+  if (!isUndefined(element)) {
+    setTimeout(() => {
+      const active = element.getElement();
+      active.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    });
+  }
+};
 
 const loadImg = (node: BaseButton, url: string): void => {
   const element = node.getElement();
@@ -49,6 +69,7 @@ export default class Cards extends BaseComponent {
   public drawCards(activeLevel = 1): void {
     const children: BaseComponent[] = [];
     const data = store.game.getLevelData(activeLevel);
+    let active;
     if (data === null) {
       throw new Error('null');
     }
@@ -69,6 +90,7 @@ export default class Cards extends BaseComponent {
           }
           if (activeGame.levelData.id === el.levelData.id) {
             card.setClasses(['active-game']);
+            active = card;
           }
           const name = new BaseComponent('p', ['name-img'], {}, el.levelData.name);
           const back = new BaseComponent('div', ['dark-layer']);
@@ -81,7 +103,7 @@ export default class Cards extends BaseComponent {
         });
       }
     }
-
     this.replaceChildren(...children);
+    scrollToActive(active);
   }
 }

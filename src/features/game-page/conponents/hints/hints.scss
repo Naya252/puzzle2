@@ -99,3 +99,19 @@
     transition: none;
   }
 }
+
+@media only screen and (width <= 1000px) {
+  .head {
+    align-items: flex-end;
+    .icon-btn {
+      width: 1.2rem;
+      height: 1.2rem;
+      padding: 0;
+    }
+
+    .icon {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}

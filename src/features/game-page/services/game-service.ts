@@ -99,15 +99,16 @@ export async function createData(
 
   const max = Math.max(...data.map((el) => el.widthPercents));
   const onePercentPx = Number(imgWidth.slice(0, -2)) / 100;
-  const width48Px = 48 / onePercentPx;
+
+  const minWidth = calcMinWidth() / onePercentPx;
   let newMax = max;
   data.forEach((el) => {
     if (!isNull(el.widthPercents)) {
-      if (el.widthPercents < width48Px) {
+      if (el.widthPercents < minWidth) {
         newMax += el.widthPercents;
         const copy = el;
-        copy.widthPercents = width48Px;
-        newMax -= width48Px;
+        copy.widthPercents = minWidth;
+        newMax -= minWidth;
       }
     }
   });
@@ -115,6 +116,17 @@ export async function createData(
   if (!isUndefined(changedMax)) {
     changedMax.widthPercents = newMax;
   }
+}
+
+function calcMinWidth(): number {
+  const windowInnerWidth = window.innerWidth;
+  if (windowInnerWidth > 1000) {
+    return 48;
+  }
+  if (windowInnerWidth > 750) {
+    return 28;
+  }
+  return 16;
 }
 
 export function changeDisabled(btn: BaseButton, toDisabled: boolean): void {

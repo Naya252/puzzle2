@@ -201,3 +201,28 @@
     width: 100%;
   }
 }
+
+@media only screen and (width <= 768px) {
+  .col-img {
+    font-size: clamp(0.6em, 0.15rem + 1vw, 0.8rem);
+    font-weight: 400;
+  }
+
+  .info {
+    .lvl,
+    .name {
+      font-size: 1.1em !important;
+    }
+  }
+
+  .head .text {
+    font-size: 1em !important;
+  }
+
+  .col.col-container {
+    box-sizing: border-box;
+    border: none;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+  }
+}

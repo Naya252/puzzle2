@@ -34,7 +34,7 @@ export const dragLeave = (event: Event): void => {
   }
 };
 
-export const dragOver = (event: Event, curPuzzle: HTMLElement): void => {
+export const dragOver = (event: Event, curPuzzle: HTMLElement, currentPoint: number): void => {
   if (!isNull(event.target) && isHTMLElement(event.target)) {
     const parent = curPuzzle.parentNode;
 
@@ -44,6 +44,18 @@ export const dragOver = (event: Event, curPuzzle: HTMLElement): void => {
         copy.style.zIndex = '';
         return;
       }
+
+      const row = event.target.parentNode;
+      if (!isNull(row) && isHTMLElement(row)) {
+        const { id } = row;
+        const splitId = id.split('-');
+        if (Number(splitId[1]) !== currentPoint) {
+          const copy = curPuzzle;
+          copy.style.zIndex = '';
+          return;
+        }
+      }
+
       event.preventDefault();
     }
   }
@@ -61,6 +73,13 @@ export const drop = (event: Event, puzzle: HTMLElement, curPuzzleParent: ParentN
     isHTMLElement(event.target) &&
     isHTMLElement(curPuzzleParent)
   ) {
+    if (event.target.classList.contains('col-container') && event.target.firstChild !== null) {
+      const anotherImg = event.target.firstChild;
+      curPuzzleParent.append(anotherImg);
+      if (isHTMLElement(anotherImg)) {
+        changeWidth(curPuzzleParent, anotherImg);
+      }
+    }
     if (event.target.classList.contains('col-img')) {
       const parentTarget = event.target.parentNode;
       if (!isNull(parentTarget) && isHTMLElement(parentTarget)) {
