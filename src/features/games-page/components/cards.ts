@@ -25,17 +25,6 @@ const scrollToActive = (element: BaseButton | undefined): void => {
   }
 };
 
-const loadImg = (node: BaseButton, url: string): void => {
-  const element = node.getElement();
-  const tempImage = new Image();
-  tempImage.onload = () => {
-    element.style.backgroundImage = `url(${url})`;
-    element.style.background = `#dee2e6 center / cover no-repeat url(${url})`;
-    node.removeClasses(['loader']);
-  };
-  tempImage.src = url;
-};
-
 export default class Cards extends BaseComponent {
   private readonly cb: VoidFunction;
 

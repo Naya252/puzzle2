@@ -1,40 +1,59 @@
 @import '../../../../styles/variables';
 
+.badge {
+  display: flex;
+  min-width: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background-color: rgba($error-color, 0.4);
+  color: $dark-color;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.art-info {
+  p {
+    margin: 0;
+  }
+}
+
 .result {
+  display: flex;
   width: 100%;
+  flex-direction: column;
+  padding: 40px;
   aspect-ratio: 16/9;
   background-color: #fff;
-  display: flex;
-  flex-direction: column;
   gap: 32px;
-  padding: 40px;
 
   .sentences-wrapper {
     display: flex;
-    gap: 40px;
     max-height: 60%;
+    gap: 40px;
   }
 
   .result-block {
-    color: $dark-color;
-    width: calc(50% - 20px);
     display: flex;
+    width: calc(50% - 20px);
     flex-direction: column;
+    color: $dark-color;
     gap: 12px;
   }
 
   .sentences {
     display: flex;
     flex-direction: column;
+    padding: 8px 0;
     gap: 12px;
     overflow-y: auto;
-    padding: 8px 0;
   }
 
   .sentence {
     display: flex;
     padding: 0 8px;
     gap: 12px;
+
     p {
       margin: 0;
     }
@@ -46,8 +65,8 @@
 
   .title-statistic {
     display: flex;
-    gap: 8px;
     align-items: center;
+    gap: 8px;
 
     h3 {
       margin: 0;
@@ -75,8 +94,8 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background-color: rgba($dark-color, 0.4);
     border-radius: 5px;
+    background-color: rgba($dark-color, 0.4);
   }
 
   ::-webkit-scrollbar-thumb:hover {
@@ -84,29 +103,11 @@
   }
 }
 
-.badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 16px;
-  min-width: 32px;
-  background-color: rgba($error-color, 0.4);
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: $dark-color;
-}
-
 .art-container {
   display: flex;
-  gap: 32px;
   color: $dark-color;
   font-weight: 500;
-}
-
-.art-info {
-  p {
-    margin: 0;
-  }
+  gap: 32px;
 }
 
 .art-card {

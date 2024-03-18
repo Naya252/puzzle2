@@ -46,9 +46,9 @@
     min-height: 120px;
     padding: 12px 20px;
     border: 2px solid #464849;
+    background-blend-mode: luminosity;
     background-color: $light-color;
     transition: all 0.3s ease;
-    background-blend-mode: luminosity;
 
     .dark-layer {
       position: absolute;
@@ -83,8 +83,8 @@
 
     &:active,
     &.active-game {
-      filter: brightness(1);
       border-color: $accent-color;
+      filter: brightness(1);
 
       .dark-layer {
         background-color: rgba($light-color, 0.45);
@@ -106,13 +106,13 @@
     background-blend-mode: normal;
 
     &::before {
-      content: url('../../assets/icons/checkbox-marked.svg');
-      width: 1.2rem;
-      height: 1.2rem;
       position: absolute;
+      z-index: 1;
       top: 4px;
       right: 4px;
-      z-index: 1;
+      width: 1.2rem;
+      height: 1.2rem;
+      content: url('../../assets/icons/checkbox-marked.svg');
     }
   }
 }
@@ -121,31 +121,26 @@
   position: relative;
 
   &::before {
-    content: url('../../assets/icons/checkbox-multiple-marked.svg');
-    width: 1.2rem;
-    height: 1.2rem;
     position: absolute;
+    z-index: 1;
     top: calc(50% - 10px);
     right: 8px;
-    z-index: 1;
+    width: 1.2rem;
+    height: 1.2rem;
+    content: url('../../assets/icons/checkbox-multiple-marked.svg');
   }
 }
 
 .loader {
+  display: block;
   width: 100%;
   height: 15px;
-  display: block;
-  background: linear-gradient(
-      to right,
-      rgba(255, 255, 255, 0),
-      rgba(255, 255, 255, 0.5) 50%,
-      rgba(255, 255, 255, 0) 80%
-    ),
+  animation: shine 1.5s infinite;
+  background: linear-gradient(to right, rgb(255 255 255 / 0%), rgb(255 255 255 / 50%) 50%, rgb(255 255 255 / 0%) 80%),
     lightgray;
+  background-position: 0 0;
   background-repeat: repeat-y;
   background-size: 50px 500px;
-  background-position: 0 0;
-  animation: shine 1.5s infinite;
 }
 
 @keyframes shine {

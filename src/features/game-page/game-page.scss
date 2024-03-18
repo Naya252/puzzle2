@@ -56,13 +56,13 @@
   display: flex;
   width: 100%;
   max-height: 10%;
+  justify-content: center;
   margin: 1rem auto;
   aspect-ratio: 16 / 0.9;
   background-color: $light-color2;
   color: $dark-color;
   font-size: 1.2rem;
   font-weight: 600;
-  justify-content: center;
 }
 
 .bg-transparent {
@@ -120,13 +120,13 @@
   }
 
   &.hide-img {
-    background: #ffffff;
+    background: #fff;
     background-blend-mode: color;
     color: $dark-color;
     text-shadow: none;
 
     &::after {
-      background: #ffffff !important;
+      background: #fff !important;
       background-blend-mode: color !important;
     }
 
@@ -176,7 +176,7 @@
 }
 
 .to-white {
-  background: #ffffff !important;
+  background: #fff !important;
   background-blend-mode: color !important;
 }
 

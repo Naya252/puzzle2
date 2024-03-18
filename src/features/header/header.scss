@@ -40,10 +40,10 @@
 }
 
 .navbar {
+  position: sticky;
   display: flex;
   min-width: 100%;
   flex-direction: column;
-  position: sticky;
 }
 
 .logo-wrap {
