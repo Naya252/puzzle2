@@ -1,20 +1,47 @@
-# naya252-JSFE2023Q4
-
-## Contact Information
-
-**Telegram:** [@naya252](https://t.me/naya252) \
-**E-mail:** naya252naya@gmail.com
-
-## Tasks
-
-**Coffee house:** [main link](https://rolling-scopes-school.github.io/naya252-JSFE2023Q4/coffee-house/) I had some problems with my branches. I created new branches for PR to the Main branch. All history with correct marks of time in the coffee-house-old and coffee-house-week2-old branch.
-
-**Hangman:** [main link](https://rolling-scopes-school.github.io/naya252-JSFE2023Q4/hangman/)
-
-**Nonograms:** [main link](https://rolling-scopes-school.github.io/naya252-JSFE2023Q4/nonograms/)
-
-**Self-introduction:** [main link](https://rolling-scopes-school.github.io/naya252-JSFE2023Q4/self-introduction/)
-
-**TypeScript Essentials:** [link](https://rolling-scopes-school.github.io/naya252-JSFE2023Q4/typescript-essentials/)
-
-**News API:** [link](https://rolling-scopes-school.github.io/naya252-JSFE2023Q4/news-api/)
+1. Task: [link](https://github.com/rolling-scopes-school/tasks/tree/master/stage2/tasks/puzzle)
+2. Screenshot: 
+![image](https://github.com/rolling-scopes-school/naya252-JSFE2023Q4/assets/52450582/61c7f4c2-a892-4c8b-b62a-6926d353a383)
+3. Deploy: [link](https://naya252-puzzle.netlify.app/)
+4. Done 18.03.2024 / deadline 19.03.2024
+5. Score:
+    Cross check criteria 245 points
+    - [x] Implementation of Input Fields and Login Button (10 points)
+    - [x] Comprehensive Field Validation (10 points)
+    - [x] Local Storage for User Credentials (5 points)
+    - [x] Access Control and Logout Functionality (5 points)
+    - [x] Start Screen Content (10 points)
+    - [x] Navigation from Start Screen (5 points)
+    - [x] Word Cards Randomization and Interaction (10 points)
+    - [x] Dynamic Word Card Sizing (5 points)
+    - [x] Reordering and Returning Word Cards to Source Data Block (5 points)
+    - [x] Sentence Transition and Round Completion (10 points)
+    - [x] Sentence Assembly Verification (10 points)
+    - [x] 'Check' to 'Continue' Button Transformation (5 points)
+    - [x] Automatic Sentence Completion Functionality (5 points)
+    - [x] Drag-and-Drop Functionality (15 points)
+    - [x] Puzzle-Like Word Card Design (15 points)
+    - [x] Translation Hint Implementation and Toggle Functionality (10 points)
+    - [x] Pronunciation Hint Implementation and Interactive Audio Icon (20 points)
+    - [x] Background Image Puzzle Hint (25 points)
+    - [x] Hint State Persistence and Default Settings (5 points)
+    - [x] Difficulty Level and Round Selection (10 points)
+    - [x] Visual Differentiation of Completed Rounds (10 points)
+    - [x] Persistence and Continuation of Last Round (5 points)
+    - [x] Background Image Revelation and Information Display (5 points)
+    - [x] Transition to Next Round or Results Screen (5 points)
+    - [x] Navigation from Statistics Page (5 points)
+    - [x] Categorization of Sentences (10 points)
+    - [x] Round Sentences and Audio Pronunciation Feature (5 points)
+    - [x] Miniature Artwork Display (5 points)
+   
+    Mentors Check Criteria (170 points)
+    - [x] Prettier and ESLint Configuration (10 points)
+    - [x] Husky Configuration (10 points)
+    - [x] TypeScript Usage and Functions (20 points)
+    - [x] Code Duplication and Magic Numbers (20 points)
+    - [x] Bundling and Modular Architecture (30 points)
+    - [x] Linter and TypeScript Rules Compliance (10 points)
+    - [x] Commit Naming Conventions (5 points)
+    - [x] Squashing Branches on Merge (5 points)
+    - [x] PR Management and Descriptions (10 points)
+    - [ ] Overall Code Quality (50 points)
